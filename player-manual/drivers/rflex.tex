@@ -1,0 +1,178 @@
+\subsection*{Synopsis}
+The {\tt rflex\_*} family of drivers are used to control RWI robots by directly
+communicating with RFLEX onboard the robot (i.e., Mobility is bypassed).
+To date, these drivers have been tested on an ATRV-Jr, but they {\em should}
+work with other RFLEX-controlled robots: you will have to determine some
+parameters to set in the config file, however.
+
+As of March 2003 these drivers have been modified to support the b21r robot,
+Currently additional support has been added for the power interface and bumper interface. For the pan tilt unit on the b21r please refer to the ptu46 driver. -- Toby Collett
+
+\subsection*{Interfaces / Configuration requests}
+Although all the RFLEX interaction is actually done in a single thread, the
+different devices are accessed through different Player drivers:
+\begin{itemize}
+\item {\tt rflex\_position}:
+  \begin{itemize}
+  \item Interface: {\tt position} (see Section~\ref{sect:position})
+  \item Configurations: {\tt VELOCITY\_MODE}, {\tt SET\_ODOM},
+                        {\tt GET\_GEOM}, {\tt MOTOR\_POWER},
+                        {\tt RESET\_ODOM}
+  \end{itemize}
+\item {\tt rflex\_sonar}:
+  \begin{itemize}
+  \item Interface: {\tt sonar} (see Section~\ref{sect:sonar})
+  \item Configurations: {\tt GET\_GEOM}, {\tt POWER}
+  \end{itemize}
+\item {\tt rflex\_power}:
+  \begin{itemize}
+  \item Interface: {\tt power} (see Section~\ref{sect:power})
+  \item Configurations: none
+  \item Notes: The power driver seems to report a different value than that on the LCD on the robot so
+  an offset can be added in the configuration file.
+  \end{itemize}
+\item {\tt rflex\_bumper}:
+  \begin{itemize}
+  \item Interface: {\tt bumper} (see Section~\ref{sect:bumper})
+  \item Configurations: {\tt GET\_GEOM}
+  \end{itemize}
+\item {\tt rflex\_ir}:
+  \begin{itemize}
+  \item Interface: {\tt ir} (see Section~\ref{sect:ir})
+  \item Configurations: {\tt POSE}, {\tt POWER}
+  \end{itemize}
+
+\end{itemize}
+Some generic devices (e.g. {\tt aio} and {\tt dio}) may be available, but are
+untested.
+
+\subsection*{Configuration file options}
+For example configuration
+files, see {\tt umass\_ATRVJr.cfg}, {\tt umass\_ATRVMini.cfg} and
+{\tt b21r\_rflex\_lms200.cfg}.
+
+\textbf{IMPORTANT: }
+Due to a number of initilisation issues relating to the multipart nature of the rflex driver the
+configuration option \emph{rflex\_done} must be set to 1 in the last rflex driver in the config file. This will
+cause the server to wait until all the rflex driver options have been parsed before launching its main thread.
+\emph{The driver will hang if you do not speify this value}
+
+\subsection*{rflex\_position}
+\begin{center}
+{\small \begin{tabular}{|l|l|l|l|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt rflex\_serial\_port} & string & {\bf none} & Serial port connected to RFlex device. See note 5.\\
+{\tt mm\_length} & string & {\bf none} & Length of the robot in millimeters\\
+{\tt mm\_width} & string & {\bf none} & Width of the robot in millimeters\\
+{\tt odo\_distance\_conversion} & string & {\bf none} & Odometry conversion. See Note 1.\\
+{\tt odo\_angle\_conversion} & string & {\bf none} & Odometry conversion. See Note 2.\\
+{\tt default\_trans\_acceleration} & string & {\bf none} & Set translational acceleration, in mm.\\
+{\tt default\_rot\_acceleration} & string & {\bf none} & Set rotational acceleration, in radians.\\
+\hline
+\end{tabular}}
+\end{center}
+
+\subsection*{rflex\_sonar}
+\begin{center}
+{\small \begin{tabular}{|l|l|l|l|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt rflex\_serial\_port} & string & {\bf none} & Serial port connected to RFlex device. See note 5.\\
+{\tt range\_distance\_conversion} & string & {\bf none} & Sonar range conversion factor. See Note 7.\\
+{\tt sonar\_age} & string & {\bf none} & Prefiltering parameter. See Note 3.\\
+{\tt max\_num\_sonars} & string & {\bf none} & See Note 4.\\
+{\tt num\_sonars} & string & {\bf none} & See Note 4.\\
+{\tt num\_sonar\_banks} & string & {\bf none} & See Note 4.\\
+{\tt num\_sonars\_possible\_per\_bank} & string & {\bf none} & See Note 4.\\
+{\tt num\_sonars\_in\_bank} & string & {\bf none} & See Note 4.\\
+{\tt mmrad\_sonar\_poses} & string & {\bf none} & Sonar positions and directions.  See Note 6.\\
+\hline
+\end{tabular}}
+\end{center}
+
+\subsection*{rflex\_bumper}
+\begin{center}
+{\small \begin{tabular}{|l|l|l|l|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt rflex\_serial\_port} & string & {\bf none} & Serial port connected to RFlex device. See note 5.\\
+{\tt bumper\_count} & int & {\bf none} & Number of bumper panels\\
+{\tt bumper\_def} & float tuple & {\bf none} & Tuple of geometry for each bumper\\
+{\tt rflex\_bumper\_address} & int & {\bf 64} & The base address of first bumper in the DIO address range\\
+\hline
+\end{tabular}}
+\end{center}
+
+\subsection*{rflex\_ir}
+\begin{center}
+{\small \begin{tabular}{|l|l|l|l|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt rflex\_serial\_port} & string & {\bf none} & Serial port connected to RFlex device. See note 5.\\
+{\tt rflex\_base\_bank} & int & {\bf 0} & Base IR Bank\\
+{\tt rflex\_bank\_count} & int & {\bf 0} & Number of banks in use\\
+{\tt rflex\_banks} & int tuple & {\bf [0]} & Number of IR sensors in each bank\\
+{\tt pose\_count} & int & {\bf 0} & Total Number of IR sensors\\
+{\tt ir\_min\_range} & int & {\bf 0} & Min range of ir sensors (mm) (Any range below this is returned as 0)\\
+{\tt ir\_max\_range} & int & {\bf 0} & Max range of ir sensors (mm) (Any range above this is returned as max)\\
+{\tt rflex\_ir\_calib} & float tuple & {\bf [1 1]} & IR Calibration data (see Note 8)\\
+{\tt poses} & float tuple & {\bf [0]} & x,y,theta of sensors (mm, mm, deg)\\
+\hline
+\end{tabular}}
+\end{center}
+
+\subsection*{rflex\_power}
+\begin{center}
+{\small \begin{tabular}{|l|l|l|l|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt rflex\_serial\_port} & string & {\bf none} & Serial port connected to RFlex device. See note 5.\\
+{\tt rflex\_power\_offset} & int & {\bf 0} & The calibration constant for the power calculation in decivolts\\
+\hline
+\end{tabular}}
+\end{center}
+
+
+\subsection*{Notes}
+\begin{enumerate}
+\item Since the units used by the Rflex for odometry appear to be completely
+arbitrary, this coefficient is needed to convert to millimeters:
+mm = (rflex units) / (odo\_distance\_conversion).  These arbitrary units also
+seem to be different on each robot model. I'm afraid you'll have to determine
+your robot's conversion factor by driving a known distance and observing the
+output of the RFlex.
+\item Conversion coefficient for rotation odometry: see {\tt odo\_distance\_conversion}. Note that heading is re-calculated by the Player driver since the RFlex is not very accurate in this respect. See also Note 1.
+\item Used for prefiltering: the standard Polaroid sensors never return values that are closer than the closest obstacle, thus we can buffer locally looking for the closest reading in the last "sonar\_age" readings. Since the servo tick here is quite small, you can still get pretty recent data in the client.
+\item These values are all used for remapping the sonars from Rflex indexing
+to player indexing. Individual sonars are enumerated 0-15 on each board, but
+at least on my robots each only has between 5 and 8 sonar actually attached.
+Thus we need to remap all of these indexes to get a contiguous array of
+N sonars for Player.
+  \begin{itemize}
+    \item {\tt max\_num\_sonars} is the maximum enumeration value+1 of all sonar
+    meaning if we have 4 sonar boards this number is 64.
+    \item {\tt num\_sonars} is the number of physical sonar sensors - meaning the number of ranges that will be returned by Player.
+    \item {\tt num\_sonar\_banks} is the number of sonar boards you have.
+    \item {\tt num\_sonars\_possible\_per\_bank} is probobly 16 for all robots,
+    but I included it here just in case. this is the number of sonar that can
+    be attached to each sonar board, meaning the maximum enumeration value
+    mapped to each board.
+    \item {\tt num\_sonars\_in\_bank} is the nubmer of physical sonar attached
+    to each board in order - you'll notice on each the sonar board a set of dip
+    switches, these switches configure the enumeration of the boards
+    (ours are 0-3)
+
+  \end{itemize}
+
+\item The first RFlex device (position, sonar or power) in the config file must include this option, and only the first device's value will be used.
+\item This is about the ugliest way possible of telling Player where each sonar is mounted.  Include in the string groups of three values:{\tt "x1 y1 th1 x2 y2 th2 x3 y3 th3 ..."}.  x and y are mm and theta is radians, in Player's robot coordinate system.
+\item Used to convert between arbitrary sonar units to millimeters: mm = sonar units / range\_distance\_conversion.
+\item Calibration is in the form Range = $(Voltage/a)^b$ and stored in the tuple as [a1 b1 a2 b2 ...] etc for each ir sensor.
+\end{enumerate}
+

@@ -1,0 +1,60 @@
+\subsection*{Synopsis}
+The {\tt rwi\_*} family of drivers are used to control RWI robots using
+RWI's Mobility software.  To date, these drivers have been tested on the
+B21r, but they {\em should} work with other Mobility-controlled robots.
+
+\note{This documentation may be incomplete and/or wrong, because I (brian) 
+didn't write the driver.  Comments and corrections from users are welcome.}
+
+\subsection*{Interfaces / Configuration requests}
+Although all the Mobility interaction is actually done in a single thread, the
+different Mobility devices are accessed through different Player drivers, each
+supporting a different interface and supporting some subset of configuration
+requests:
+\begin{itemize}
+\item {\tt rwi\_bumper}:
+  \begin{itemize}
+  \item Interface: {\tt bumper} (see Section~\ref{sect:bumper})
+  \item Configurations: none
+  \item Notes: Provides access to RWI bumpers, for those robots so equipped.
+  \end{itemize}
+\item {\tt rwi\_laser}:
+  \begin{itemize}
+  \item Interface: {\tt laser} (see Section~\ref{sect:laser})
+  \item Configurations: none
+  \item Notes: Provides access to Mobility-controlled laser range-finder, for 
+        those robots so equipped.
+  \end{itemize}
+\item {\tt rwi\_position}:
+  \begin{itemize}
+  \item Interface: {\tt position} (see Section~\ref{sect:position})
+  \item Configurations: {\tt GET\_GEOM}, {\tt MOTOR\_POWER}, {\tt RESET\_ODOM}
+  \item Notes: Provides access to a synchro-drive wheelbase.  
+               Only speed control is supported.
+  \end{itemize}
+\item {\tt rwi\_power}:
+  \begin{itemize}
+  \item Interface: {\tt power} (see Section~\ref{sect:power})
+  \item Configurations: none
+  \item Notes: Provides access to battery charge information.
+  \end{itemize}
+\item {\tt rwi\_sonar}:
+  \begin{itemize}
+  \item Interface: {\tt sonar} (see Section~\ref{sect:sonar})
+  \item Configurations: {\tt GET\_GEOM}, {\tt POWER}
+  \item Notes: Provides access to a sonar array.
+  \end{itemize}
+\end{itemize}
+
+\subsection*{Configuration file options}
+\begin{center}
+{\small \begin{tabular}{|l|l|c|l|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt name} & string & {\tt "B21R"} & The name of the robot to which Player
+should connect\\
+\hline
+\end{tabular}}
+\end{center}
+

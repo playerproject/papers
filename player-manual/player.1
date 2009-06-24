@@ -1,0 +1,143 @@
+.\" Copyright Andries Brouwer, Ragnar Hojland Espinosa and A. Wik, 1998.
+.\"
+.\" This file may be copied under the conditions described
+.\" in the LDP GENERAL PUBLIC LICENSE, Version 1, September 1998
+.\" that should have been distributed together with this file.
+.\"
+.TH PLAYER 1 "June 2004" "Player/Stage Project" "Version 1.5"
+.SH NAME
+player \- one hell of a robot server
+.SH SYNOPSIS
+.B player [options]
+.IB configfile
+.br
+.B player [options] -s
+.IB stageIOdir
+.br
+.B player [options] -g
+.IB gazebosim
+.IB configfile
+.sp
+.SH DESCRIPTION
+.B player
+is a network server for robot control. Running on your robot,
+.B player
+provides a clean and simple interface to the robot's sensors and
+actuators over the IP network. Your client program talks to 
+.B player
+over a TCP (or maybe UDP; see 
+.B -t
+below) socket, reading data from sensors, writing commmands to actuators, and
+configuring devices on the fly.
+.PP
+.B player
+supports a variety of robot hardware. The original 
+.B player
+platform is the ActivMedia Pioneer 2 family, but several other robots
+and many common sensors are supported. 
+.B player's
+modular architecture
+makes it easy to add support for new hardware, and an active
+user/developer community contributes new drivers.
+.PP
+In addition to providing an interface to robot hardware, 
+.B player
+is also the
+primary interface for the robot simulators
+.B stage(1)
+and
+.B gazebo(1).
+.SH "OPTIONS"
+.TP
+.B "\-h \-\-help"
+Print help message; also tells you which devices drivers are compiled in.
+.TP
+.B "\-p <port>"
+The server should listen for clients on the indicated port.  Default is 6665.
+.TP
+.B "\-t <protocol>"
+Communicate using the indicated transport protocol.  Currently supported
+protocols are:
+.B tcp
+and
+.B udp.
+The default is
+.B tcp.
+Support for
+.B udp
+is currently experimental and not recommended.
+.TP
+.B "\-k <key>"
+Require clients to authenticate themselves using the given key.  Note that
+this authentication mechanism is
+.B NOT
+a proper security mechanism; see the User Manual for more details.
+.TP
+.B "\-s <stageIOdir>"
+Act as a frontend to the simulator
+.B stage(1),
+using memory-mapped I/O in the indicated directory.  This option is passed by
+.B stage
+when starting
+.B player,
+and is not intended for users.  However, if you want to debug 
+.B player
+while using
+.B stage,
+you can start
+.B stage
+without 
+.B player
+(using
+.B -n
+) and then start 
+.B player
+manually (presumably inside a debugger) with
+.B -s
+and the appropriate directory (e.g.,
+.B /tmp/stageIO.gerkey.0
+).
+.TP
+.B "\-g <gazebosim>"
+Act as a frontend to the simulator
+.B gazebo(1).
+Player will attach to the already-running instance of Gazebo with the given
+name.  Note that you must still supply a configuration file that specifies
+the mapping between Gazebo entities and Player devices.
+.TP
+.B <configfile>
+Except when used with
+.B stage
+,
+the last command-line argument is assumed to be the path to a
+.B player
+configuration file that determines which devices will be used.  See
+.B CONFIGURATION FILES
+below.
+.SH "CONFIGURATION FILES"
+The
+.B player
+configuration file format will eventually be described here.  For now,
+look in the User Manual.
+.SH "SEE ALSO"
+The Player User Manual, available from:
+.br
+.B http://playerstage.sourceforge.net/doc/doc.html
+.SH AUTHORS
+Brian Gerkey
+.B <gerkey@users.sourceforge.net>
+, Andrew Howard
+.B <inspectorg@users.sourceforge.net>
+, Richard Vaughan
+.B <rtv@users.sourceforge.net>
+, and contributors.
+.SH AVAILABILITY
+.B player
+is part of the Player/Stage project, and is available for download, under
+the GNU General Public License, at:
+.nf
+.B http://playerstage.sourceforge.net
+.SH BUGS
+Report bugs and request features using our SourceForge.net trackers:
+.nf
+.B http://sourceforge.net/tracker/?group_id=42445

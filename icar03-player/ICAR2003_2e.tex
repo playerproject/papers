@@ -1,0 +1,91 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  ICAR2003_2e.tex  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[a4paper]{ICAR2003}
+
+\begin{document} 
+
+% create the title header:
+
+\title{\Large\bf My Wonderful Article in IEEE Format for ICAR 2003}
+\author{\begin{tabular}{cc}
+%\affiliation{\begin{tabular}{cc}
+\bf I.M.Author	& \bf M.Y. Coauthor \\
+ & \\
+My Department	& Coauthor Department \\
+My Institute	& Coauthor Institute \\
+My Address	& Coauthor Address \\
+My e-mail	& Coauthor e-mail \\
+\end{tabular}}
+\date{}
+
+\maketitle
+
+\thispagestyle{empty}
+
+\begin{Abstract}
+This is the abstract of my paper.
+It must fit within the size allowed, which is about 3 inches, including section title, which is 11 point bold font.
+If you don't want the text in italics, simply remove the 'em' command and the curly braces which bound the abstract text.
+If you have em commands within an italicized abstract, the text will come out as normal (nonitalicized) text.
+\end{Abstract} 
+
+\section{Introduction}
+Here is my introduction text.
+There are 2 blank lines before the section heading and one afterwards.
+Heading text is 12 point bold font.
+Paragraphs are not indented.
+I may want a numbered subsection, which is done as follows.
+
+\subsection{Previous Work}
+In subsections there is 1 blank line before the section heading and one 
+afterwards.  Heading text is 11 point bold font.  Paragraphs are separated by 
+blank lines without tabs.
+
+Throughout I may cite references of the form \cite{key:foo} or
+\cite{foo:baz}, and \LaTeX\ will keep track of numbering.  The numbers are based
+on the order you place them in the bibliography, not the order they appear in
+the text.  They should (I believe) be in alphabetical order.  \LaTeX\ will put
+square brackets about the number within the text of your paper.  For those of 
+you new to the bibliography package, you may have to run the \LaTeX\ process 
+twice to allow all references to be resolved.  You will get a warning about
+a missing .aux file.  Just rerun \LaTeX\ and it will be ok.
+
+
+\section{Summary and Conclusions}
+This template will get you through the minimum article, i.e., no figures or
+equations.  To include those, please refer to your \LaTeX\ manual and the IEEE
+publications guidelines.  Good Luck!
+
+Here is a simple example of doing equations.
+The \LaTeX\ automatically increments the equation number.
+\begin{equation}
+y = x + 1
+\label{eq.1}  %this is for automatic referencing
+\end{equation}
+Squaring Eq. (\ref{eq.1}), we obtain 
+\begin{equation}
+y^2 = (x + 1)^2 = x^2 + 2x +1
+\label{eq.2}
+\end{equation}
+
+%this is how to do an unnumbered subsection
+
+\begin{Acknowledgment}
+This is how to do an unnumbered subsection, which comes out in 11 point bold
+font.  Here I thank my colleagues, especially Mike Gennert, who know more 
+about Tex and \LaTeX\ than I.
+\end{Acknowledgment}
+
+\begin{thebibliography}{9}
+\bibitem{key:foo}
+I. M. Author, 
+``Some Related Article I Wrote,''
+{\em Some Fine Journal}, Vol. 17, pp. 1-100, 1987.
+
+\bibitem{foo:baz}
+A. N. Expert, 
+{\em A Book He Wrote,}
+His Publisher, 1989.
+\end{thebibliography}
+
+\end{document}
+

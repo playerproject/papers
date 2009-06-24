@@ -1,0 +1,69 @@
+\subsection*{Synopsis}
+The {\tt udpbroadcast} driver provides a mechanism whereby Player clients can
+communicate with other Player clients, even when those clients are connected
+to different Player servers.  Any message sent to a {\tt udpbroadcast} device
+will be received by all {\tt udpbroadcast} devices that are on the same
+physical network (including the sending device).  The underlying transport
+mechanism is based on broadcast UDP sockets (see Notes below).
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+
+\begin{itemize}
+\item {\tt comms}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabular}{|l|l|c|l|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt addr} & string & {\tt "10.255.255.255"} & The broadcast address to be
+used.\\
+{\tt port} & integer & {\tt 6013} & The broadcast port to be used.\\
+\hline
+\end{tabular}}
+\end{center}
+
+\subsection*{Notes}
+
+\begin{itemize}
+\item Make sure your network supports broadcasting, and that your
+sys-admin wont cut you off for trying!  Broadcasting is best done
+on private networks.
+\item The default broadcast address is 10.255.255.255, port 6013
+(i.e. it assumes you have a 10.*.*.* network with netmask 255.0.0.0).
+The broadcast address and port are configurable in Player's configuration
+file.
+\item There is no ``simulated'' {\tt udpbroadcast} driver in Stage; the real
+{\tt udpbroadcast} driver is always used.  In this case, the default 
+broadcast address is 127.255.255.255 (the loopback device).  At present,
+there is no way of changing the default value.
+\item There is no guarantee that messages will be delivered, or 
+that they will be delivered in the exact order they were transmitted.
+\item The {\tt udpbroadcast} driver is meant for transmitting small packets
+only: dont try to use it for passing full-color images around at 30Hz!
+You will flood your network and overflow both incoming and outgoing queues
+in the {\tt udpbroadcast} driver.
+\end{itemize}
+
+%and you dont have a 10.0.0.0 network, you can easily create a dummy one.  
+%As root, type the following:
+%  \begin{quote}
+%  {\tt ifconfig dummy0 10.0.0.1 netmask 255.0.0.0 broadcast 10.255.255.255}
+%  \end{quote}
+%Your broadcast packets will now loop back to you.

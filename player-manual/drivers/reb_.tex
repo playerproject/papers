@@ -1,0 +1,66 @@
+\subsection*{Synopsis}
+The {\tt reb\_*} family of drivers are used to control robots using
+the K-Team Kameleon 376SBC with Robotics Extension Board (REB).  The Kameleon, (or Kam), has a Motorola MC68376 microcontroller that can perform velocity and position control and odometry for up to four motors, using the REB.  It can also access a number of A/D inputs, which we have connected to Sharp GP2D12 IR proximity detectors.  
+
+In its default setting, a host computer can communicate with the Kam using the K-Team SerCom program, which uses a simple protocol to send commands and read data back.  At UMass, we found that the default SerCom did not offer enough performance, so we developed our own, LPRSerCom, which uses the same protocol, but with some enhancements, such as letting the Kam do the odometry updates and IR synchronization.  The bottom line is that you need to modifiy these drivers to work with the K-Team SerCom, which is not very difficult (mainly removing the LPRSerCom specific code).  We can also send you a copy of LPRSerCom if you'd like.  Email John Sweeney (\texttt{sweeney@cs.umass.edu}) for information.
+
+\subsection*{Interfaces / Configuration requests}
+Like the P2OS device, one thread handles 3 separate devices: position, IR, and power. 
+\begin{itemize}
+	\item \texttt{reb\_position}
+	\begin{itemize}
+		\item Interface: {\tt position} (see Section~\ref{sect:position})
+		\item Configurations: {\tt GET\_GEOM}, {\tt MOTOR\_POWER}, 
+			{\tt VELOCITY\_MODE}, {\tt RESET\_ODOM}, {\tt POSITION\_MODE},
+			{\tt SPEED\_PID}, {\tt POSITION\_PID}, {\tt SPEED\_PROF},
+			{\tt SET\_ODOM}
+		\item Notes: Provides access to differential wheelbase.  Position mode is supported, but experimental.  Velocity mode has two operating modes: direct and heading-based.  In direct mode, the translational and rotational desired velocities are given as commands.  In heading-based, a desired heading an limits on translation and rotational velocities are given.
+	\end{itemize}
+	
+	\item {\tt reb\_ir}
+	
+	\begin{itemize}
+		\item Interface: {\tt ir} (see Section~\ref{sect:ir})
+		\item Configurations: {\tt POSE}, {\tt POWER}
+		\item Notes: Accesses an array of IR proximity detectors.  The device returns voltages from the detector, which the client must decode into ranges (usually done in IRProxy).  
+		The 8 sensors are arranged in a counterclockwise  octagon around the robot, with sensor 0 oriented with the robocentric positive $\hat{x}$ axis, and sensor 2 oriented robocentrically at positive $\hat{y}$.
+	\end{itemize}
+
+	\item {\tt reb\_power}
+	\begin{itemize}
+		\item Interface: {\tt power} (see Section~\ref{sect:power})
+		\item Configurations: none
+		\item Notes: Accesses the current battery voltage information, from the REB.
+	\end{itemize}
+\end{itemize}
+\subsection*{Configuration file options}
+Table~\ref{table:reb_options} lists the available configuration file options for the REB device.  In an
+option is specified more than once in the config file, then only the last value will be used.  Note that the
+``subclass'' option is very UMass specific, since are using two different chassis with different gear ratios.
+
+\begin{table}[ht]
+\begin{center}
+{\small \begin{tabular}{|l|l|c|l|l|l|} \hline
+Name & Type & Default & Supported by &  Values & Meaning \\ \hline
+{\tt port} & string & {\tt /dev/ttySA1} & {\tt reb\_*} &  & This port connects to the REB.\\ \hline
+{\tt subclass} & string & {\tt slow} & {\tt reb\_position} & fast, slow & The type of robot.\\ \hline
+\end{tabular}}
+\end{center}
+\caption{{\em Configuration file options for the {\tt reb\_*} drivers}.}
+\label{table:reb_options}
+\end{table}
+
+\subsection*{Notes}
+\begin{itemize} 
+\item The {\tt reb\_position} driver sets some default PID parameters and resets the odometry to $(0,0,0)$ when
+the first client subscribes.  Likewise, the IR sensors are only turned on when an IR client has subscribed.
+\item Position mode is very finicky.  This seems to be a problem with the REB itself, which may lose bytes
+on the serial port while performing position mode actions.  This causes the driver to time out, and quite possibly
+lose a connection to the REB.
+\item The LPRSerCom protocol running on the REB will sometimes lose a byte over the port, which can cause
+the driver to time out on a read call to the port.  The driver will attempt to retry the call, but there is no
+guarantee that the REB will be able to handle it.  The best solution is to reset the REB.  Hopefully this
+should be a relatively rare occurrence.
+\item As mentioned above, for this driver to function properly, the REB needs to be running the LPRSerCom program.
+\item Much of the code for this driver was originally adapted from the {\tt p2os} driver, which we have appreciated.
+\end{itemize}

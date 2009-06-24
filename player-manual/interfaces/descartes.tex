@@ -1,0 +1,38 @@
+\section{{\tt descartes}}
+\subsection*{Synopsis}
+The {\tt descartes} interface provides access to an HRL Descartes holonomic
+robot base, with bumpers.
+
+\subsection*{Drivers}
+The {\tt descartes} interface is only supported by Stage.
+
+\subsection*{Data}
+The {\tt descartes} interface returns data regarding the current state of the
+Descartes base; the format is given in Table~\ref{table:descartesdata}.
+
+\begin{table}[ht]
+\begin{center}
+{\small \begin{tabular}{|l|l|l|}
+\hline
+Field & Type & Meaning\\
+\hline
+{\tt xpos} & {\bf int} & X position (in mm)\\
+\hline
+{\tt ypos} & {\bf int} & Y position (in mm)\\
+\hline
+{\tt heading} & {\bf short} & Heading (in degrees)\\
+\hline
+{\tt bumpers} & array of 2 {\bf unsigned byte}s & State of bumpers (boolean)\\
+\hline
+\end{tabular}}
+\end{center}
+\caption{{\em Format of data from the {\tt descartes} interface 
+(12 bytes total).}}
+\label{table:descartesdata}
+\end{table}
+
+\subsection*{Command}
+The {\tt descartes} interface accepts no commands.
+
+\subsection*{Configuration}
+The {\tt descartes} interface cannot be configured.

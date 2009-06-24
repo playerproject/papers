@@ -1,0 +1,40 @@
+\subsection*{Synopsis}
+The {\tt ptu46} driver provides control of the PTU-46-17.5
+pan-tilt unit from directed perceptions through its text interface
+(This unit is standard on the RWI b21r robot). This driver will
+probably work with other directed perceptions pan tilt units,
+please let me know if you have tested it.
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt ptz}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item {\tt PLAYER\_PTZ\_CONTROL\_MODE\_REQ}
+\end{itemize}
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt port} & string & {\tt "/dev/ttyS0"} & The serial port to be used\\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}
+\begin{itemize}
+\item This driver is new and not thoroughly tested.
+\end{itemize}

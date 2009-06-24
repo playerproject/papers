@@ -1,0 +1,23 @@
+*.ps *.dvi *.log
+*.aux *.blg *.toc
+*.lot *.lof
+*.bbl *.pdf *.bak html_docs
+bumper.tex
+power.tex
+position.tex
+laser.tex
+Player.tex
+gripper.tex
+sonar.tex
+blobfinder.tex
+fiducial.tex
+comms.tex
+ptz.tex
+audio.tex
+speech.tex
+gps.tex
+wifi.tex
+truth.tex
+dio.tex
+aio.tex
+ir.tex

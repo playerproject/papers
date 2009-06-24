@@ -1,0 +1,40 @@
+\subsection*{Synopsis}
+The {\tt cmucam2} driver connects over a serial port to a
+CMUCam2. Presents a blobfinder interface and can track multiple
+color blobs. Provides data only; no commands or configs. This driver
+is rudimentary but working. Color tracking parameters are defined in
+Player's config file; for example:
+
+\begin{verbatim}
+  blobfinder(
+    driver "cmucam2"
+    devicepath "/dev/ttyS1"
+    num_blobs 2
+    # values must be between 40 and 240 (!)
+    color0 [  red_min red_max blue_min blue_max green_min green_max] )
+    # values must be between 40 and 240 (!)
+    color1 [  red_min red_max blue_min blue_max green_min green_max] )  
+  )
+\end{verbatim}
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt blobfinder}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\subsection*{Configuration file options}
+{\bf TODO}
+
+\subsection*{Notes}

@@ -1,0 +1,84 @@
+\section{{\tt bps} {\bf (Unfinished)}}
+
+\subsection*{Overview}
+
+The {\tt bps} device ({\bf b}eacon-based {\bf p}ositioning {\bf
+s}ystem) determines the current global pose (position and
+orientation) of the robot.  This pose is determined by combining
+odometric measurements from the {\tt position} device with beacon
+measurements from the {\tt laserbeacon} device.  Beacons must be
+pre-placed at known locations, and these locations must be provided to
+the {\tt bps} device via a configuration request.
+
+Note that the {\tt bps} device is still experimental; while the external
+interface is now more-or-less fixed, the internal structure is likely
+to evolve.
+
+\subsection*{Data}
+
+The {\tt bps} device returns an estimate of the current position and
+orientation of the robot.  The format for the data packet is given in
+Table~\ref{table:bps_data}.
+
+\begin{table}[ht]
+\begin{center}
+\begin{tabularx}{\columnwidth}{|l|l|X|}
+\hline
+Field & Type & Meaning\\
+\hline
+{\tt px} & {\bf int} & Current X position (mm)\\
+{\tt py} & {\bf int} & Current Y position (mm)\\
+{\tt pa} & {\bf int} & Current orientation (degrees)\\
+{\tt ux} & {\bf int} & Current X uncertainty (mm)\\
+{\tt uy} & {\bf int} & Current Y uncertainty (mm)\\
+{\tt ua} & {\bf int} & Current orientation uncertainty (degrees)\\
+{\tt reserved} & & Reserved\\
+\hline
+\end{tabularx}
+\end{center}
+\caption{{\em Format of data from the {\tt bps} device.}}
+\label{table:bps_data}
+\end{table}
+
+\subsection*{Command}
+The {\tt bps} device accepts no commands.
+
+\subsection*{Configuration}
+
+The {\tt bps} device accepts two configuration requests: 
+{\tt setbeacon} and {\tt setlaser}.
+The {\tt setbeacon} request adds a beacon to the robot's internal map;
+the identity, position and orientation of the beacon must be supplied.
+Note that beacons must be {\em unique}: i.e. no two beacons in the
+environment can have the same identity.
+The {\tt setlaser} request sets the pose of the laser in the
+robot-centered coordinate system.  If the laser is placed near the
+center of the robot, this offset can usually be ignored.
+The format of the configuration request packets is shown in
+Table~\ref{table:bps_config}.
+
+\begin{table}[ht]
+\begin{center}
+\begin{tabularx}{\columnwidth}{|l|l|l|X|}
+\hline
+Request & Field & Type & Meaning \\
+\hline
+{\tt setbeacon} & {\tt subtype} & {\bf unsigned byte} & Request sub-type; must be 2. \\
+                & {\tt id} & {\bf unsigned byte} & Beacon id. \\
+                & {\tt px} & {\bf int} & Beacon X position (mm). \\
+                & {\tt py} & {\bf int} & Beacon Y position (mm). \\
+                & {\tt pa} & {\bf int} & Beacon orientation (degrees). \\
+                & {\tt ux} & {\bf int} & Beacon X uncertainty (mm). \\
+                & {\tt uy} & {\bf int} & Beacon Y uncertainty (mm). \\
+                & {\tt ua} & {\bf int} & Beacon orientation uncertainty (degrees). \\
+\hline
+{\tt setlaser} & {\tt subtype} & {\bf unsigned byte} & Request sub-type; must be 3. \\
+               & {\tt px} & {\bf int} & Laser X position (mm). \\
+               & {\tt py} & {\bf int} & Laser Y position (mm). \\
+               & {\tt pa} & {\bf int} & Laser orientation (degrees). \\
+\hline
+\end{tabularx}
+\end{center}
+\caption{{\em Format of the configuration requests from the {\tt bps} device.}}
+\label{table:bps_config}
+\end{table}

@@ -1,0 +1,51 @@
+
+\begin{figure}[ht]
+\begin{center}
+\epsfig{file=upc.eps, height=40mm}
+\caption{A sample UPC barcode (one digit).}
+\label{fig:upc}
+\end{center}
+\end{figure}
+
+\subsection*{Synopsis}
+
+The UPC barcode detector searches for standard, single-digit UPC
+barcodes in a camera image (a sample barcode is shown above).
+
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt blobfinder}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item {\tt camera}
+\end{itemize}
+
+%\noindent Supported configuration requests:
+%\begin{itemize}
+%\end{itemize}
+
+
+
+\subsection*{Configuration file options}
+
+TODO
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt camera} & integer & 0 & Index of the {\tt camera} device to be used.\\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}
+
+For more information on the {\tt upcbarcode} driver, ask Andrew Howard:
+{\tt ahoward@usc.edu}.

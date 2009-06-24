@@ -1,0 +1,41 @@
+\subsection*{Synopsis}
+The {\tt amtecpowercube} driver provides control of an industrial-strength
+pan-tilt unit called the PowerCube, made by Amtec.
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt ptz}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item {\tt PLAYER\_PTZ\_CONTROL\_MODE\_REQ}
+\end{itemize}
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt port} & string & {\tt "/dev/ttyS0"} & The serial port to be used\\
+{\tt home} & integer & {\tt 0} & Whether to home the unit before commanding it\\
+{\tt speed} & integer & {\tt 40} & Maximum pan/tilt speed (deg/sec)\\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}
+\begin{itemize}
+\item This driver is new and not thoroughly tested.
+\item For constant swiveling, the PowerCube works better under velocity
+control.
+\end{itemize}

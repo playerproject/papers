@@ -1,0 +1,167 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% $Id: pubref.sty,v 1.1.1.1 2003/03/06 20:07:01 rtv Exp $
+%
+% This is PUBREF.STY Version 1.2 as of 20 June 2001
+%    by Brian Gerkey (gerkey@usc.edu)
+%
+% Inserts postcript to place a publication reference at the top of a
+% document.  The (default) result looks something like:
+%
+%     In Proceedings of the Intl. Conf. on Unsustainable Living
+%        pages 1-4, Los Angeles, California, May 15-16, 2001
+%
+% (the string "Proceedings of..." will be in italics)
+%
+% NOTE: These lines will NOT appear in your DVI viewer.  They will only
+%       appear in the resultant postscript after you run dvips.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% To use this package:
+%
+% Put this line near the top of your file
+%
+%    \usepackage[<options>]{pubref}
+%
+% Then call \pubref somewhere in your preamble (i.e. BEFORE \begin{document}):
+%
+%    \pubref{<booktitle>}{<address>}
+%
+% For example:
+%
+%    \pubref{Proceedings of the Intl. Conf. on Unsustainable Living}
+%           {pages 1-4, Los Angeles, California, May 15-16, 2001}
+%
+% You can leave the <address> field empty; e.g:
+%
+%    \pubref{Proceedings of the Intl. Conf. on Unsustainable Living}{}
+%
+%
+% Options are follows (some are logically exclusive):
+%
+%    in        - Print the string "In" before the <booktitle> (default)
+%
+%    submit    - Print the string "Submitted to" before the <booktitle>
+%
+%    toappear  - Print the string "To appear in" before the <booktitle>
+%
+%    noprefix  - Don't print any prefix string before the <booktitle>
+%
+%    firstpage - Print the reference only on the first page (default)
+%
+%    everypage - Print the reference on every page
+%
+%    12pt      - Print the reference in 12pt Times-Roman (default)
+%
+%    11pt      - Print the reference in 11pt Times-Roman
+%
+%    10pt      - Print the reference in 10pt Times-Roman
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% modifications by cjenkins 11.28.2001
+%
+%    additional options
+%    letter    - Print the reference for Letter sized document (default)
+%    a4        - Print the reference for A4 sized document
+%
+%    additional command
+%    \pubrefplace{xposition}{yposition} - places reference from lower-left corner
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{pubref}[2001/06/20 v1.2]
+\typeout{Publication reference package PUBREF Version 1.2 as of 20 June 2001}
+
+\DeclareOption{submit}{
+  \def\pubref@AppearsIn{Submitted to}
+}
+\DeclareOption{in}{
+  \def\pubref@AppearsIn{In}
+}
+\DeclareOption{toappear}{
+  \def\pubref@AppearsIn{To appear in}
+}
+\DeclareOption{noprefix}{
+  \def\pubref@AppearsIn{}
+}
+
+\DeclareOption{everypage}{
+  \def\pubref@LastPage{99999}
+}
+\DeclareOption{firstpage}{
+  \def\pubref@LastPage{0}
+}
+
+\DeclareOption{12pt}{
+  \def\pubref@FontSize{12}
+}
+\DeclareOption{11pt}{
+  \def\pubref@FontSize{11}
+}
+\DeclareOption{10pt}{
+  \def\pubref@FontSize{10}
+}
+
+\DeclareOption{letter}{
+  \def\pubref@PlacementX{40}
+  \def\pubref@PlacementY{760}
+}
+\DeclareOption{a4}{
+  \def\pubref@PlacementX{40}
+  \def\pubref@PlacementY{800}
+}
+
+\newcommand{\pubrefplace}[2]{
+  \def\pubref@PlacementX{#1}
+  \def\pubref@PlacementY{#2}
+}
+
+\newcommand{\pubref}[2]{
+  \AtBeginDocument{
+    \special{!
+      userdict begin
+      /bop-hook
+      {
+        % make a copy of the page number (we have to leave it on the stack)
+        dup
+        % see we should write the header on this page
+        \pubref@LastPage\space le
+        {
+          gsave
+          /Times-Roman findfont
+          \pubref@FontSize\space scalefont setfont
+          \pubref@PlacementX\space \pubref@PlacementY\space moveto
+          (\pubref@AppearsIn) show
+          /Times-Italic findfont
+          \pubref@FontSize\space scalefont setfont
+          % move to the right the appropriate number of characters
+          (\pubref@AppearsIn) length 1 add 5 mul
+          \pubref@FontSize\space 12.0 div mul \pubref@PlacementX\space add \pubref@PlacementY\space moveto
+          (#1) show
+          /Times-Roman findfont
+          \pubref@FontSize\space scalefont setfont
+          % move to the right and also down one line
+          (\pubref@AppearsIn) length 1 add 5 mul
+          \pubref@FontSize\space 12.0 div mul \pubref@PlacementX\space add \pubref@PlacementY\space
+          \pubref@FontSize\space sub moveto
+          (#2) show
+          grestore
+        } if
+      } def
+      end
+    }
+  }
+}
+
+%\ExecuteOptions{firstpage,in,12pt}
+\ExecuteOptions{firstpage,in,12pt,letter}
+\ProcessOptions
+
+\endinput
+

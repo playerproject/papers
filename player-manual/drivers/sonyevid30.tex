@@ -1,0 +1,43 @@
+\subsection*{Synopsis}
+The {\tt sonyevid30} driver provides control of a Sony EVID30 pan-tilt-zoom
+camera unit.
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt ptz}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt port} & string & {\tt "/dev/ttyS2"} & The serial port to be used\\
+{\tt fov} & tuple & {\tt [3 30]} & The minimum and maximum fields of view (in
+degrees) Half-angle??\\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}
+\begin{itemize}
+\item The {\tt sonyevid30} operates over a direct serial link, {\bf not}
+through the P2OS microcontroller's AUX port, as is the normal configuration
+for ActivMedia robots.  You may have to make or buy a cable to connect your
+camera to a normal serial port.
+\item This driver likely only works in Linux.
+\end{itemize}

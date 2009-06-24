@@ -1,0 +1,90 @@
+\subsection*{Synopsis}
+ACTS is a fast color segmentation system written by Paul Rybski and sold
+by ActivMedia; see:\\
+\indent {\tt http://www.activrobots.com}\\
+After training, ACTS finds colored blobs in a single camera image.
+Player's {\tt acts} driver provides access to ACTS.
+
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt blobfinder}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+
+\subsection*{Configuration file options}
+Note: In the table below, a default value of (none) indicates that the
+associated option will not be passed to ACTS.  As a result, ACTS's own
+internal default for that parameter will be used.  Consult the ACTS manual
+to determine what those defaults are.
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt path} & string & {\tt ""} & Path to the ACTS executable (leave empty to
+search the user's PATH for {\tt acts}).\\
+
+{\tt configfile} & string & {\tt "/usr/local/acts/actsconfig"} & Path to the
+ACTS configuration file to be used.\\
+
+{\tt version} & string & {\tt "2.0"} & The version of ACTS in use (should be
+{\tt "1.0"}, {\tt "1.2"}, or {\tt "2.0"}).\\
+
+{\tt width} & integer & {\tt 160} & Width of the camera image (in pixels).\\
+
+{\tt height} & integer & {\tt 120} & Height of the camera image (in pixels).\\
+
+{\tt pixels} & integer & (none) & Minimum area required to call a blob a blob 
+(in pixels).\\
+
+{\tt port} & integer & {\tt 5001} & TCP port by which Player should connect to
+ACTS.\\
+
+{\tt fps} & integer & (none) & Frame per second of the camera.\\
+
+{\tt drivertype} & string & (none) & Type of framegrabber driver in use (e.g.,
+{\tt "bttv"}, {\tt "bt848"}, {\tt "matrox"}).\\
+
+{\tt invert} & integer & (none) & Is the camera inverted?\\
+
+{\tt devicepath} & string & (none) & Path to the device file for the
+framegrabber (e.g., {\tt "/dev/fg0"}).\\
+
+{\tt channel} & integer & (none) & Which channel to select on the
+framegrabber.\\
+
+{\tt norm} & string & (none) & Normalization??\\
+
+{\tt pxc200} & integer & (none) & Is the framegrabber a PXC200?\\
+
+{\tt brightness} & float & (none) & Brightness level??\\
+
+{\tt contrast} & float & (none) & Contrast level??\\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}
+
+\begin{itemize}
+\item The {\tt acts} driver supports ACTS versions 1.0, 1.2, and 2.0.
+\item PXC200 framegrabbers, when accessed through the {\tt bttv} module,
+may cause the machine to hang.  A workaround is to first read a frame from
+a framegrabber channel on which there is no video signal, and then start
+reading from the right channel.  (This problem is unrelated to Player's {\tt
+acts} driver)
+\end{itemize}

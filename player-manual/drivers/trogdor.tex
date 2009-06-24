@@ -1,0 +1,39 @@
+\subsection*{Synopsis}
+The {\tt trogdor} driver provides control of a small, fast, mobile robot
+made by Botrics.  It's called both the {\em O-Bot} and the {\em Trogdor}.
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt position}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item {\tt PLAYER\_POSITION\_GET\_GEOM\_REQ}
+\item {\tt PLAYER\_POSITION\_MOTOR\_POWER\_REQ}
+\end{itemize}
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt port} & string & {\tt "/dev/usb/ttyUSB1"} & The serial port to be used\\
+\hline
+\end{tabularx}}
+\end{center}
+
+
+\subsection*{Notes}
+\begin{itemize}
+\item This driver is new and not thoroughly tested.
+\end{itemize}

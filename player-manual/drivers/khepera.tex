@@ -1,0 +1,46 @@
+\subsection*{Synopsis}
+The {\tt khepera\_*} family of drivers are used to interface to the K-Team khepera robot. 
+
+This driver is experimental and should be treated with caution. At this point it supports the position and ir interfaces.
+
+\subsection*{Interfaces / Configuration requests}
+Like the P2OS device, one thread handles 2 separate devices: position and IR. 
+\begin{itemize}
+	\item \texttt{khepera\_position}
+	\begin{itemize}
+		\item Interface: {\tt position} (see Section~\ref{sect:position})
+		\item Configurations: {\tt GET\_GEOM}, {\tt MOTOR\_POWER}, 
+			{\tt VELOCITY\_MODE}, {\tt RESET\_ODOM}
+		\end{itemize}
+	
+	\item {\tt khepera\_ir}
+	
+	\begin{itemize}
+		\item Interface: {\tt ir} (see Section~\ref{sect:ir})
+		\item Configurations: {\tt POSE}
+	\end{itemize}
+
+\end{itemize}
+\subsection*{Configuration file options}
+Table~\ref{table:khepera_options} lists the available configuration file options for the Khepera device.  If an option is specified more than once in the config file, then only the first value will be used.
+
+\begin{table}[ht]
+\begin{center}
+{\small \begin{tabular}{|l|l|c|l|l|l|} \hline
+Name & Type & Default & Supported by &  Values & Meaning \\ \hline
+{\tt port} & string & {\tt /dev/ttyUSB0} & {\tt khepera\_*} &  & This port connects to the Khepera.\\ \hline
+{\tt scale} & float & {\tt 10} & {\tt khepera\_*} & & As the khepera is so small the actual geometry doesnt make much sense with many of the existing defaults so the geometries can all be scaled by this factor. \\ \hline
+
+{\tt encoder\_res} & float & {\tt 1/12} & {\tt khepera\_position } & & The wheel encoder resolution. \\ \hline
+{\tt pose} & float tuple & {\tt [0 0 0]} & {\tt khepera\_position } & & The pose of the robot in player coordinates (mm, mm, deg). \\ \hline
+{\tt size} & float tuple & {\tt [57 57]} & {\tt khepera\_position } & & The size of the robot approximated to a rectangle (mm, mm). \\ \hline
+
+{\tt pose\_count} & int & {\tt 8} & {\tt khepera\_ir } & & The number of ir poses. \\ \hline
+{\tt poses} & float tuple & {\tt Khepera poses} & {\tt khepera\_ir } & & The pose of each ir sensor [mm,mm,deg] \\ \hline
+
+\end{tabular}}
+\end{center}
+\caption{{\em Configuration file options for the {\tt khepera\_*} drivers}.}
+\label{table:khepera_options}
+\end{table}
+

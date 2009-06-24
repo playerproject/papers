@@ -1,0 +1,45 @@
+
+\subsection*{Synopsis}
+ The {\tt service\_adv\_lsd} driver advertises a service for a robot 
+server using the simple broadcast service advertisement library
+"libservicediscovery", available at 
+{\tt http://interreality.org/software/libservicediscovery}.
+The server is published with a URL in the form
+{\tt player://}{\it host}{\tt :}{\it port}.
+For each device on the robot, an entry will 
+be added to the service's types, like this:
+{\tt device:{\it interface}\#{\it number}({\it driver}}. 
+ 
+The service advertisement drivers provide no interface to clients. 
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt name} & string & "robot" & Name of the service\\
+{\tt description} & string & "Player Robot Server" & Longer description of the service\\
+{\tt tags} & tuple & {\it none} & Extra strings to add to service types \\
+\hline
+\end{tabularx}}
+\end{center}
+

@@ -1,0 +1,39 @@
+\subsection*{Synopsis}
+
+The {\tt stg\_sonar} driver is used to access Stage models with the
+sonar interface.
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt sonar}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item  {\tt stg\_simulation}.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item \verb+PLAYER_SONAR_GET_GEOM+
+\end{itemize}
+
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt model} & string & {\tt NULL} & name of the Stage model. Must match a ``name'' definition in a Stage world file. \\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}
+
+For details of the Stage simulator, consult the Stage manual.
+

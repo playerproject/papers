@@ -1,0 +1,63 @@
+
+\subsection*{Synopsis}
+
+The {\tt writelog} driver can be used to store data from other devices
+within the Player server.  The log files generated in this way can be
+``replayed'' using the {\tt readlog} driver.  See the below for some
+usage examples of the {\tt writelog} driver.
+
+
+
+\subsection*{Interfaces}
+
+The {\tt writelog} driver currently supports the {\tt null} interface,
+meaning that it generates no data, and accepts no commands or
+configuration requests.
+
+Currently, the {\tt writelog} driver is capable of storing data from
+the following interfaces: {\tt laser}, {\tt position}, {\tt wifi}.
+
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt filename} & string & {\tt writelog.log} & Output log file name \\
+{\tt devices} & list & none & A list of strings specifiying the
+devices whose data should be stored.  Each device is specified as {\tt
+``device:index''}. \\
+\hline
+\end{tabularx}}
+\end{center}
+
+%\subsection*{Notes}
+
+
+
+\subsection*{Example: Storing Odometry and Laser Data}
+
+The following configuration file will odometry from a Pioneer
+and laser data from a SickLMS200 to a log file.
+  \begin{verbatim}
+  position:0 (driver "p2os_position")
+  laser:0 (driver "sicklms200")
+  null:0 
+  (
+    driver "writelog" 
+    filename "foo.log" 
+    devices ["position:0" "laser:0"]
+    alwayson 1
+  )
+  \end{verbatim}
+Note that the {\tt alwayson} flag will cause the driver to start
+logging data as soon as Player is started, and will continue logging
+data until Player is stopped.
+
+Look in Section \ref{sect:readlog_driver} for an example that shows
+how to replay this data using the {\tt readlog} driver.
+
+
+

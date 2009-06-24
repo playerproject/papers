@@ -1,0 +1,51 @@
+\subsection*{Synopsis}
+The {\tt sickpls} driver is used to control a SICK PLS laser range-finder.
+This driver will soon be merged into the {\tt sicklms200} driver.
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt laser}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item \verb+PLAYER_LASER_GET_GEOM+
+\item \verb+PLAYER_LASER_GET_CONFIG+
+\item \verb+PLAYER_LASER_SET_CONFIG+
+\end{itemize}
+
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt pose} & tuple & {\tt [0.0 0.0 0.0]} & The mounted pose of the laser (in mm,
+mm, degrees)\\
+{\tt delay} & integer & 0 & Startup delay on the laser, in seconds (set this to 35 if you
+have a newer generation Pioneer whose laser is switched on when the serial port is open). \\
+{\tt port} & string & {\tt "/dev/ttyS1"} & The serial port to be used\\
+{\tt rate} & integer & {\tt 9600} & Baud rate to use when talking to
+laser; should be one of 9600, 38400, 500000.\\
+{\tt resolution} & integer & {\tt 50} & The angular scan resolution to be used
+(in units of 0.01 degrees)\\
+{\tt invert} & integer & {\tt 0} & Set this flag if the laser is mounted upside-down; the range
+and bearing results will be flipped so the laser appears to be right-way-up.\\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}
+
+\begin{itemize}
+\item This driver likely only works in Linux.
+\end{itemize}

@@ -1,0 +1,50 @@
+\subsection*{Synopsis}
+The {\tt er1} driver provides position control of the Evolution Robotics' ER1 and ERSDK robots.
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt position}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item {\tt PLAYER\_POSITION\_GET\_GEOM\_REQ}
+\item {\tt PLAYER\_POSITION\_MOTOR\_POWER\_REQ}
+\end{itemize}
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt port} & string & {\tt "/dev/usb/ttyUSB1"} & The serial port to be used\\
+\hline
+{\tt axle} & float & {\tt 0.38} & The distance between the motorized wheels\\
+\hline
+{\tt motor\_dir} & -1,1 & {\tt 1} & Direction of the motors, if the left motor is plugged in to the motor 1 port on the RCM, put -1 here instead\\
+\hline
+{\tt debug} & 0,1 & {\tt 0} & Put a 1 here if you want to see debug messages\\
+\hline
+\end{tabularx}}
+\end{center}
+
+
+\subsection*{Notes}
+\begin{itemize}
+\item This driver is new and not thoroughly tested.  The odometry cannot be trusted to give accurate readings.
+
+\item You will need a kernel driver to allow the serial port to be seen.  This driver, and news about the player driver can be found at "http://www-robotics.usc.edu/~dfseifer/project-erplayer.php".
+
+\item TODO: split this driver similar to the way that p2os is split, one main body device, and sub-devices like position, and IR which inherit from this main class.  Implement power interface.
+
+\item NOT DOING: I don't have a gripper, if someone has code for a gripper, by all means contribute it.  It would be welcome to the mix.
+\end{itemize}

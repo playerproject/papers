@@ -1,0 +1,88 @@
+
+\subsection*{Synopsis}
+
+The {\tt readlog} driver can be used to ``replay'' data stored in a
+log file.  This is particularly useful for debugging client programs,
+since users may run their clients against the same data set over and
+over again.  Suitable log files can be generated using the {\tt
+writelog} driver, or they may be downloaded from the Robotics Data Set
+Repository (Radish):
+  \begin{quote} 
+  \RADISHHOMEPAGE 
+  \end{quote}
+Note that, to make use of log file data, Player must be started in a
+special mode:
+  \begin{verbatim}
+  $ player -r <logfile> <configfile>
+  \end{verbatim} %$
+The {\tt -r} switch instructs Player to load the given log file, and
+replay the data according the configuration specified in
+\verb+<configfile>+.  See the below for some usage examples of the 
+{\tt readlog} driver.
+
+
+
+\subsection*{Interfaces}
+
+The {\tt readlog} driver currently supports the following interfaces:
+{\tt laser}, {\tt position}, {\tt wifi}.
+
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt index} & integer & 0 & Device index in the log file. \\
+\hline
+\end{tabularx}}
+\end{center}
+
+%\subsection*{Notes}
+
+
+
+\subsection*{Example: Replay Odometry and Laser Data}
+
+The following configuration file {\tt foo.cfg} will read odometry and
+laser data from a log file:
+  \begin{verbatim}
+  position:0 (driver "readlog" index 0)
+  laser:0 (driver "readlog" index 0)
+  \end{verbatim}
+The Player server must also be started in the appropriate mode:
+  \begin{verbatim}
+  $ player -r foo.log foo.cfg
+  \end{verbatim} %$
+where {\tt foo.log} contains the data to be replayed.  See Section
+\ref{sect:writelog_driver} for an example that shows how to generate a
+suitable log file using the {\tt writelog} driver.
+
+
+\subsection*{Example: Post-hoc Localization}
+
+A particularly useful feature of the {\tt readlog} driver is that it
+can be used to generate localization information a robot the {\em
+after} the experiment has been performed.  The following configuration
+file {\tt bar.cfg} will read odometry and laser data from a log file,
+and pass it to the {\tt amcl} driver to generate robot pose estimates.
+  \begin{verbatim}
+  position:0 (driver "readlog" index 0)
+  laser:0 (driver "readlog" index 0)
+  localize:0 
+  (
+    driver "amcl" 
+    position_index 0 
+    laser_index 0 
+    map_file "mymap.pnm" 
+    map_scale 0.05
+  )
+  \end{verbatim}
+The Player server must also be started in the appropriate mode:
+  \begin{verbatim}
+  $ player -r foo.log bar.cfg
+  \end{verbatim} %$
+
+

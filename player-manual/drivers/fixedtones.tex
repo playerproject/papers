@@ -1,0 +1,35 @@
+\subsection*{Synopsis}
+The {\tt fixedtones} driver provides access to sound hardware, via the Linux
+OSS interface.  Incoming sound is put through a Discrete Fourier Transform,
+and the frequencies and amplitudes of the five highest peaks in the frequency
+domain are determined.  Note that the {\tt FFTW} library is required; this
+package is available (also under the GNU GPL) from: {\tt http://www.fftw.org}.
+The {\tt fixedtones} driver can also produce fixed-tone sounds of given
+frequency, amplitude, and duration.
+
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt audio}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+
+\subsection*{Configuration file options}
+No configuration file options are supported.
+
+\subsection*{Notes}
+\begin{itemize}
+\item This driver is not widely used and may not function properly.
+\end{itemize}

@@ -1,0 +1,70 @@
+\subsection*{Synopsis}
+The {\tt nomad} driver connects over a serial port to a Nomad 200
+robot running Nomadics' ``robotd'' daemon.   Data and commands are handled
+via the custom {\tt nomad} interface.
+
+The {\tt nomad\_position} and {\tt nomad\_sonar} drivers provide data in
+the standard position and sonar interfaces.  Position interface provides
+data, takes commands and supports geometry config.  Sonar interface
+provides data and supports geometry config. This driver is rudimentary
+but tested and working on the Nomad 200. It may also work on other Nomads
+that run robotd.
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt nomad}
+\item {\tt position}
+\item {\tt sonar}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item {\tt GET\_GEOM} (position and sonar)
+\end{itemize}
+
+\subsection*{Configuration file options}
+
+\noindent {\tt nomad}:\\
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt serial\_device} & string & {\tt ""} & The serial port to be used\\
+{\tt serial\_speed} & int & {\tt -1} & The baud rate to use \\
+\hline
+\end{tabularx}}
+\end{center}
+
+\noindent {\tt nomad\_position}:\\
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt nomad\_index} & int & {\tt 0} & The index of the underlying nomad
+device.\\
+\hline
+\end{tabularx}}
+\end{center}
+
+\noindent {\tt nomad\_sonar}:\\
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt nomad\_index} & int & {\tt 0} & The index of the underlying nomad
+device.\\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}

@@ -1,0 +1,58 @@
+\subsection*{Synopsis}
+The {\tt VFH} driver implements the Vector Field Histogram Plus local navigation method by Ulrich and Borenstein \cite{UlrichBorenstein98}.  VFH+ provides real-time obstacle avoidance and path following capabilities for fast mobile robots.  
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+
+\begin{itemize}
+\item {\tt position}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item {\tt position}
+\item {\tt laser}
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt position\_index} & integer & {\tt 0} & Index of the underlying position device.\\
+{\tt laser\_index} & integer & {\tt 0} & Index of the laser device.\\
+{\tt cell\_size} & length & {\tt 0.1} & Local occupancy map grid size (m).\\
+{\tt window\_diameter} & integer & {\tt 61} & Dimensions of occupancy map (map consists of window\_diameter X window\_diameter cells).\\
+{\tt sector\_angle} & integer & {\tt 5} & Histogram angular resolution, in degrees.\\
+{\tt robot\_radius} & length & {\tt 0.25} & The radius of the robot (m).\\
+{\tt safety\_dist} & length & {\tt 0.1} & The minimum distance the robot is allowed to get to obstacles (m).\\
+{\tt max\_speed} & integer & {\tt 200} & The maximum allowable speed of the robot, in millimeters/second, the robot.\\
+{\tt max\_turnrate} & integer & {\tt 40} & The maximum allowable turnrate of the robot.\\
+{\tt free\_space\_cutoff} & float & {\tt 2000000.0} & Unitless value.  The higher the value, the closer the robot will get to obstacles before avoiding. \\
+{\tt weight\_desired\_dir} & float & {\tt 5.0} & Bias for the robot to turn to move toward goal position.\\
+{\tt weight\_current\_dir} & float & {\tt 3.0} & Bias for the robot to continue moving in current direction of travel.\\
+{\tt distance\_epsilon} & length & {\tt 0.5} & Planar distance from
+the target position that will be considered acceptable.\\
+{\tt angle\_epsilon} & angle & {\tt 10 degrees} & Angular difference from
+target angle that will considered acceptable.\\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}
+
+The primary parameters to tweak to get reliable performance are {\tt safety\_dist} and {\tt free\_space\_cutoff}.  In general, {\tt safety\_dist} determines how close the robot will come to an obstacle while turning (around a corner for instance) and {\tt free\_space\_cutoff} determines how close a robot will get to an obstacle in the direction of motion before turning to avoid.  From experience, it is recommeded that {\tt max\_turnrate} should be at least 15\% of {\tt max\_speed}.
+
+To get initiated to VFH, I recommend setting {\tt robot\_radius} to the radius of your robot and starting with the default values for other parameters and experimentally adjusting {\tt safety\_dist} and {\tt free\_space\_cutoff} to get a feeling for how the parameters affect performance.  Once comfortable, increase {\tt max\_speed} and {\tt max\_turnrate}.  Unless you are familiar with the VFH algorithm, I don't recommend deviating from the default values for {\tt cell\_size}, {\tt window\_diameter}, or {\tt sector\_angle}.
+
+For more information on the {\tt VFH} driver, ask Chris Jones: {\tt cvjones@robotics.usc.edu}.
+

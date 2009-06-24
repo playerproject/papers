@@ -1,0 +1,64 @@
+
+Statement of Work (4/1/02 - 3/31/03)
+------------------------------------
+
+Stage and Player work together to provide both a multi-robot simulator
+(Stage) and an interface to that simulator (Player).  The Player robot
+server provides an interface to the primitive sensors and actuators
+simulated by Stage.  Player can also provide abstract sensors and
+actuators that integrate and process data from sets of primitive devices.
+For example, the abstract laser beacon detector processes data from the
+primitive laser sensor to determine the locations of beacons in the
+environment.
+
+USC proposes to implement a variety of additional abstract sensors in
+Player, as follows:
+
+  + Laser feature detector for walls, doorways, corners, etc.
+  + Person detector
+  + Beacon-based localization using kalman filters
+  + Map-based localization using particle filters
+  + Simultaneous localization and mapping (PF, EM)
+
+The first two exist in prototype form in-house at USC already. The latter
+three are implementations of well-known techniques from the literature -
+we're not proposing basic research in these areas.
+
+We also introduce the concept of abstract actuators, which close the
+control loop between perception and action.
+
+  + Impedence controller
+  + Target-tracking (visual servoing and/or robot servoing)
+  + Person-tracking
+  + Waypoint-following
+  + Wall-following
+  + Formation-maintenance
+
+Other sensors/actuators to be negotiated.
+
+Our vision is that Player will become a common repository for what are now
+or will become standard perception and control algorithms.
+
+These enhancements will require modifications to the Player architecture:
+
+  + Protocol extensions:
+    + Synchronous request/reply (e.g., RPC) in order to support more sophisticated devices.
+    + Support for streaming data (e.g., RTP), such as live video.
+
+  + Distributed Player:
+    + Support for client-side abstract devices in order to shift computational load away from
+        the server.
+    + Support for integrating data and commands for multiple robots, thereby providing
+        a unified interface for team control.
+
+  + Device name-server:
+    + Support for network-wide logical device naming.
+    + Support for automatic load-balancing.
+
+In addition to these activities, USC will contribute to the Stage
+development being led by HRL; similarly, HRL will contribute necessary
+components for Player.
+
+---------------------------------------------------------------------
+
+

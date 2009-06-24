@@ -1,0 +1,83 @@
+\subsection*{Synopsis}
+The {\tt segwayrmp} driver provides control of a Segway RMP (Robotic
+Mobility Platform), which is an experimental robotic version of the Segway
+HT (Human Transport), a kind of two-wheeled, self-balancing electric
+scooter.
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+
+\begin{itemize}
+\item {\tt position}
+\item {\tt position3d}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item For the {\tt position} interface:
+\begin{itemize}
+\item {\tt PLAYER\_POSITION\_MOTOR\_POWER\_REQ}
+\item {\tt PLAYER\_POSITION\_GET\_GEOM\_REQ}
+\item {\tt PLAYER\_POSITION\_RESET\_ODOM\_REQ}
+\item {\tt PLAYER\_POSITION\_RMP\_VELOCITY\_SCALE}
+\item {\tt PLAYER\_POSITION\_RMP\_ACCEL\_SCALE}
+\item {\tt PLAYER\_POSITION\_RMP\_TURN\_SCALE}
+\item {\tt PLAYER\_POSITION\_RMP\_GAIN\_SCHEDULE}
+\item {\tt PLAYER\_POSITION\_RMP\_CURRENT\_LIMIT}
+\item {\tt PLAYER\_POSITION\_RMP\_RST\_INTEGRATORS}
+\item {\tt PLAYER\_POSITION\_RMP\_SHUTDOWN}
+\end{itemize}
+\item For the {\tt position3d} interface:
+\begin{itemize}
+\item {\tt PLAYER\_POSITION\_MOTOR\_POWER\_REQ}
+\end{itemize}
+\end{itemize}
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabular}{|l|l|c|l|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt canio} & string & {\tt "kvaser"} & The kind of underlying CAN I/O to
+be used.\\
+
+{\tt max\_xspeed} & int & {\tt 500} & Maximum allowed translational velocity
+(mm/sec).\\
+
+{\tt max\_yawspeed} & int & {\tt 40} & Maximum allowed angular velocity
+(deg/sec).\\
+\hline
+\end{tabular}}
+\end{center}
+
+\subsection*{Notes}
+\begin{itemize}
+\item Because of its power, weight, height, and dynamics, the Segway RMP is
+a potentially dangerous machine.  Be {\bf very} careful with it.
+\item This driver is {\bf experimental}, as has {\bf not} been widely used
+or extensively tested.  Use at your own risk.
+\item Although the RMP does not actually support motor power control from 
+software, for safety you must explicitly enable the motors using a
+{\tt PLAYER\_POSITION\_MOTOR\_POWER\_REQ} request (this request is supported in
+both {\tt position} and {\tt position3d} modes).
+\item For safety, this driver will stop the RMP (i.e., send zero velocities)
+if no new command has been received from a client in the previous 400ms or so.
+Thus, even if you want to continue moving at a constant velocity, you must
+continuously send your desired velocities.
+\item Most of the configuration requests have not been tested.
+\item The {\tt position3d} interface is entirely new and its use with this
+driver has not been tested.
+\item Currently, the only supported type of CAN I/O is {\tt "kvaser"},
+which uses Kvaser, Inc.'s CANLIB interface library.  This library provides
+access to CAN cards made by Kvaser, such as the LAPcan II.  However, the CAN 
+I/O subsystem within this driver is modular, so that it should be pretty
+straightforward to add support for other CAN cards.
+\end{itemize}

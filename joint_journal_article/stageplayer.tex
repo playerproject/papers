@@ -1,0 +1,364 @@
+\documentclass[]{article}
+
+\usepackage{graphicx}
+%\usepackage{epsf}
+\graphicspath{{./graphics/}}
+
+\usepackage{fullpage}
+%\usepackage{vmargin}
+%\setmarg{13mm}{4mm}{180mm}{240mm}
+
+\newcommand{\degrees}{$^o$}
+
+\newcommand{\kasper}{{Kasper St{\o}y}}
+\newcommand{\richard}{{Richard T.~Vaughan}}
+\newcommand{\gaurav}{{Gaurav S.~Sukhatme}}
+\newcommand{\maja}{{Maja J.~Matari\'{c}}}
+\newcommand{\brian}{{Brian P.~Gerkey}}
+
+\begin{document}
+
+%don't want date printed
+
+\title{ Player and Stage }
+
+\author{\richard \thanks{Corresponding author} 
+\and \brian \and \kasper \and \gaurav \and \maja 
+\vspace{2mm} \\ 
+{\small vaughan, gerkey, kaspers, gaurav, mataric@robotics.usc.edu} 
+\vspace{2mm} \\
+Robotics Research Laboratories, Department of Computer Science\\
+University of Southern California, Los Angeles, CA~~90089-0781
+}
+
+%\date{}
+\maketitle
+%\thispagestyle{empty}
+
+%----------------------------------------------------------------------------
+\begin{abstract}
+
+\end{abstract}
+
+%----------------------------------------------------------------------------
+\section{Introduction}
+
+isa( player, networked transducer interface )\\
+
+isa( stage, many-multiple transducer simulator that plugs into player)\\
+\\
+goals for both \\
+- enables rapid dev/test of robot controllers \\
+- complete and powerful - for researchers\\
+- easy to use - beginning reseachers and undergraduate teaching\\
+- not prescriptive of controller styyle\\
+- sensor-rich\\
+- exandable to include more stuff\\
+- not tied to any one robot (though was developed on the popular P2)\\
+\\
+recent developments in equipment and much interest in distributed\\
+systems requires very-networked sensor/actuator interface and\\
+simulation tools.\\
+\\
+This paper describes\\
+- the need for our software\\
+- the software\\
+- the development process / history of the software\\
+- some detailed examples of its use\\
+- (brief) examples of 3rd-party developments\\
+- our intended immediate upgrades\\
+- where the software will go in future\\
+
+\subsection{Why the names?}
+Player was originally named Golem, and the Stage simulator was originally
+named Arena.  However, we soon discovered that many,
+many, many pieces of robotics-related software already use those names.
+So, we had to make a change.  We needed names that capture the now-integral
+relationship between the server and simulator, so we chose Player and
+Stage, as suggested by a living Englishman, in reference to a
+very dead Englishman.
+
+\vspace*{1em}
+
+From {\sl As You Like It} Act II, Scene 7:
+\begin{quote}
+  ``All the world's a stage, \\
+  And all the men and women merely players: \\
+  They have their exits and their entrances; \\
+  And one man in his time plays many parts,''\\
+\end{quote}
+
+From {\sl Macbeth} Act V, Scene 5:
+\begin{quote}
+  ``Life's but a walking shadow, a poor player \\
+  That struts and frets his hour upon the stage \\
+  And then is heard no more: it is a tale \\
+  Told by an idiot, full of sound and fury, \\
+  Signifying nothing.''\\
+\end{quote}
+
+%----------------------------------------------------------------------------
+\section{Related work}
+%We didn't use saphira, ayllu, webots, teambots, etc.  (even though
+%they're great) because...
+Previous work in the area of robot programming interfaces has 
+focused primarily on providing a development environment that suits
+a particular control philosophy.  For example, Ayllu \cite{Werger00},
+which, like Player, can be used to control the Pioneer robots, provides
+tools for creating concurrent behaviors and, further, enforces a 
+behavior-based control structure.  Similarly, COLBERT/Saphira 
+\cite{Konolige97}, which can also control the Pioneer robots (among others), 
+is concerned mainly with the construction of fuzzily-blended behavior-based 
+control systems \cite{SaffiottiRuspiniKonolige93}.
+While such tools are undeniably useful, we believe that implementing them 
+at such a low level imposes undue restrictions on the programmer, who should 
+have the full power to build his control system in any way he chooses.
+So, in stark contrast to Ayllu and Saphira, we made a clear distinction
+in Player between the {\sl programming interface} and the {\sl control
+structure}, opting for a maximally general programming interface, with the
+belief that users would develop their own tools for building their own
+control systems (and they did; see Section~\ref{examples:tools}).  
+Further, while Ayllu and Saphira restrict the programmer to a single language
+(something akin to C, and something akin to LISP, respectively), the TCP
+socket abstraction of Player allows for the use of virtually any programming 
+language (see Section~\ref{examples:languages}).  Finally, both Ayllu and
+Saphira are commercial software products and, as such, we were not at liberty
+to modify them to suit our needs (e.g., fix bugs, add new devices); so, we 
+wrote our own, free, robot interface.
+
+Clearly, the system
+that is most similar to (and certainly some inspiration for) Player
+is the {\scshape Trip} server \cite{Jennings98}; the main difference between
+the two is that whereas {\scshape Trip} was designed as a sophisticated
+server to support extremely simple clients, we strove 
+for minimalism in our server and simplicity in our message protocol, 
+at the possible expense of causing the client to do more work.
+
+% TODO: add other stuff, maybe CORBA (GISC-based something something)
+
+As for simulators....
+
+%----------------------------------------------------------------------------
+\section{Overview}
+
+block diagram of components
+
+%----------------------------------------------------------------------------
+\section{Player}
+%what is it?
+What is Player? Player is a multi-threaded device server.  It 
+executes on a computer that is physically connected to one or more 
+sensors and actuators (or, collectively, devices) and exposes a 
+unified interface through which clients can connect to and 
+control them.  Currently, our primary use for Player is for the control
+of our ActivMedia
+Pioneer 2-DX mobile robots and the devices that can be connected to them,
+such as laser rangefinders and pan-tilt-zoom cameras.  We write control
+programs as clients to Player; these clients read sensor data
+(e.g., laser range data, compass values) from Player and write actuator 
+commands (e.g., wheel velocities, camera pan angles) to it.  As we
+explain below, Player is built on a device abstraction sufficiently intuitive
+that a beginner can quickly and easily develop his own simple clients, 
+yet flexible enough that an advanced researcher can write an arbitrarily
+complex and powerful control system.
+Although we use Player primarily to control our mobile robots and
+their accessory devices, it is important to remember that Player is truly
+a general-purpose device server that can be (and is being) used to control
+non-robotic sensors and actuators.  Of equal importance is the fact
+that Player is {\sl not} a control architecture; it does not prescribe
+or even encourage any particular structure for client programs.
+
+\subsection{Design}
+%design philsophy  - non-prescriptive - no locking, minimal ACK/NACK
+%major design decisions
+%device abstraction - justify simplifications, e.g. single update rate
+In the design of Player, we made two crucial decisions, which we now
+describe:
+\begin{itemize}
+\item client/server architecture
+\item UNIX-like device abstraction
+\end{itemize}
+
+\subsubsection{Client/Server Architecture}
+In deciding on a client/server architecture, we had only to reflect on our 
+collective (painful) experience writing controllers for various
+robots.  Most often, what \cite{Jennings98} refers to as the ``direct model'' 
+is used: all device management is included in the 
+programmer's own control program.  Usually, a library of routines to help
+with hardware interaction is provided, but this only relieves the programmer
+of the responsibility for personally speaking and understanding a variety of
+device-specific message protocols.  Interaction with physical devices 
+invariably involves rather specific timing constraints, and the direct model
+requires the programmer to adhere to these constraints in his own control
+program.  Sophisticated tools, such as Ayllu \cite{Werger00}, do
+away with timing concerns by providing a scheduler, but at the expense 
+of imposing an event loop that might be fundamentally mismatched for the 
+problem at hand, yet difficult to modify or extend.  Another solution to the
+timing problem is to multi-thread the control program.  While we cannot deny
+the utility of multi-threaded programming for the purpose of naturally 
+expressing parallel algorithms (in fact, we often write our own control systems
+as a set of threads), we believe that it is unnecessary to force the 
+programmer to employ such relatively advanced operating systems techniques
+because of the low-level details of the hardware.
+
+Another disadvantage inherent in the direct model is that
+the programmer is required to develop his code in
+the language in which the library is implemented, prohibiting the 
+time-honored engineering tradition of using the right tool (i.e.,
+programming language) for the job.  Further, the control program 
+must generally execute on the machine that is physically connected to the 
+devices the programmer wishes to control, in spite of recent advances in 
+wireless networking that can and should allow for location-independent 
+device access.  Finally,  in the direct model, control of a single device
+is usually limited to the single program that has opened it, even though
+the data from many devices, such as laser rangefinders, could clearly 
+be provided to multiple clients who might want it.
+As embedded and mobile sensors continue to proliferate, the ability
+to control them concurrently with many clients from anywhere on the 
+network will become increasingly important.
+
+We wanted a programming interface that would overcome all these hurdles
+to sensible controller design and allow us to program our robots in 
+the languages of our choice, from the machines of our choice, and with
+complete disregard for (even ignorance of) the low-level details of how 
+each device on the robot works and what is involved in managing it.
+Thus, we chose to implement Player as a device server.  Player executes
+on the robot and handles all device interaction, hiding the details and
+exposing a standard TCP socket interface.  The clients, executing anywhere
+that has network connectivity to the robot and written in any language
+that can control a TCP socket (even Emacs Lisp can do it), connect to Player
+and communicate with it by sending and receiving a small set of 
+simple messages.  In practice, users quickly develop client libraries for 
+creating and managing this TCP connection in the language of their choice
+(such utilties currently exist for C++, Java, Tcl/Tk, and Python).  The
+programmer, then, can call these simple routines when necessary and ignore 
+the networking details; he can instead concentrate on implementing a good 
+solution for the problem at hand.
+
+\subsubsection{UNIX-like Device Abstraction}
+We chose a UNIX-like device abstraction with the following properties:
+\begin{itemize}
+\item sensors and actuators are ``devices'' with read/write semantics
+\item access to a device is gained by ``opening'' it in the proper mode
+(read,write,all); improper modes are ignored (much like reading /dev/null
+or writing /dev/zero)
+\item devices are configurable (akin to {\tt ioctl()})
+\end{itemize}
+
+\noindent We chose it for the following reasons:
+\begin{itemize}
+\item standard interface to all devices (``read'' from sensors and ``write''
+to actuators, {\tt ioctl()} all of them)
+\item compartmentalizes different physical devices; only open the ones
+you need
+\item through multi-threading, driver development is simplified; new
+drivers can be written, debugged, and included without worry over 
+interactions
+\item split up ``logical'' devices intuitively (e.g., split P2OS into
+sonar, position, misc)
+\item easy to add feature detectors or other arbitrary pre- and
+post-processing as new devices; again, only activated on request
+\end{itemize}
+
+%Player is currently specifically implemented
+%for the ActivMedia Pioneer 2-DX mobile robot and its most common accessories, 
+%but the extensible server architecture should allow simple porting to other 
+%devices, and the 
+
+\subsection{Architecture}
+\label{architecture}
+The Player server has the following internal structure: threads, buffers, etc.
+
+%\begin{figure}[t]
+ %\centering
+ %\parbox[h]{50mm}{\epsfxsize=0.900\textwidth \epsfbox{buffers.eps}}
+ %\caption{{\sl Overall system architecture of Player}}
+ %\label{figure:buffers}
+%\end{figure}
+
+
+%architecture
+
+
+%how does it work?
+%what does it do?
+
+%----------------------------------------------------------------------------
+\section{Stage}
+
+what does it do?\\
+how does it work?\\
+design philsophy  - simple to enable fast\\
+major design decisions\\
+architecture\\
+interface to player\\
+
+%----------------------------------------------------------------------------
+\section{Performance}
+
+compare running system to stated goals \\
+\\
+- max effective population vs. sensor use in stage.\\
+- bandwith use in player\\
+\\
+%----------------------------------------------------------------------------
+\section{Development history}
+
+- started with Arena and P1s\\
+- arenaserver helped us transfer work to P2 robots, Arena updated to match\\
+- arenaserver was closer to what we wanted than our existing interfaces\\
+- in-house papers published using Arena/Arenaserver\\
+- SCOWR work done in Arena, papers published\\
+- Golem developed on the robots\\
+- Arena interfaced to Golem\\
+- names changed\\
+- this paper written\\
+
+%----------------------------------------------------------------------------
+\section{Case studies}
+
+- Ant\\
+- Publish-subscribe\\
+
+%----------------------------------------------------------------------------
+\section{Other projects using the software}
+\subsection{Client Utilities}
+\label{examples:languages}
+- C++ \\
+- Java \\
+- Tcl/Tk \\
+- Python \\
+
+\subsection{Tools/Projects}
+\label{examples:tools}
+- SCOWR verious\\
+- RESL everything - Boyoon's gadgets\\
+- Gaurav'a class projects\\
+- Andrew's viewer and device mods\\
+
+%----------------------------------------------------------------------------
+\section{Future work}
+
+immediate\\
+- more sensors\\
+- more robots (run-time Stage robot configuration)\\
+\\
+long term\\
+- port player to Everything - a platform for ubiquitous Sensor networks?\\
+- distribute Stage to allow very large populations\\
+\\
+%----------------------------------------------------------------------------
+\section{Conclusion}
+
+Nobody does it better.
+
+%----------------------------------------------------------------------------
+\section*{Obtaining the software}
+
+- get the web site together!
+
+\bibliographystyle{alpha}
+\bibliography{robot}
+
+\end{document}
+

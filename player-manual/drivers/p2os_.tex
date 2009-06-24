@@ -1,0 +1,123 @@
+\subsection*{Synopsis}
+Many robots made by ActivMedia, such as the Pioneer series and the AmigoBot,
+are controlled by a microcontroller that runs a special embedded operating
+system called P2OS (on older robots it is called PSOS).  The host computer
+talks to the P2OS microcontroller over a standard RS232 serial line.  Player
+includes a driver that offer access to the various P2OS-mediated devices,
+logically splitting up the devices' functionality.
+
+\subsection*{Interfaces / Configuration requests}
+Although all the P2OS interaction is actually done in a single thread, the
+different P2OS devices are accessed through different Player drivers, each
+supporting a different interface and supporting some subset of configuration
+requests:
+\begin{itemize}
+\item {\tt p2os\_aio}:
+  \begin{itemize}
+  \item Interface: {\tt aio} (see Section~\ref{sect:aio})
+  \item Configurations: none
+  \item Notes: Provides access to analog User I/O.
+  \end{itemize}
+\item {\tt p2os\_bumper}:
+  \begin{itemize}
+  \item Interface: {\tt bumper} (see Section~\ref{sect:bumper})
+  \item Configurations: none
+  \item Notes: Provides access to Pioneer bumpers, for those robots so equipped.
+  \end{itemize}
+\item {\tt p2os\_cmucam}:
+  \begin{itemize}
+  \item Interface: {\tt blobfinder} (see Section~\ref{sect:blobfinder})
+  \item Configurations: {\tt SET\_COLOR}, {\tt SET\_IMAGER\_PARAMS}
+  \item Notes: Controls a CMUCam that is connected to the AUX2 port on the
+               P2OS board.  Use the {\tt SET\_COLOR} request to tell the
+               camera which color to track.
+  \end{itemize}
+\item {\tt p2os\_compass}:
+  \begin{itemize}
+  \item Interface: {\tt position} (see Section~\ref{sect:position})
+  \item Configurations: none
+  \item Notes: Fills the compass heading into the {\tt yaw} field of the {\tt
+  position} data packet.  Accepts no commands.
+  \end{itemize}
+\item {\tt p2os\_dio}:
+  \begin{itemize}
+  \item Interface: {\tt dio} (see Section~\ref{sect:dio})
+  \item Configurations: none
+  \item Notes: Provides access to digital User I/O.
+  \end{itemize}
+\item {\tt p2os\_gripper}:
+  \begin{itemize}
+  \item Interface: {\tt gripper} (see Section~\ref{sect:gripper})
+  \item Configurations: none
+  \item Notes: Provides access to a Pioneer gripper, for those robots so
+        equipped.
+  \end{itemize}
+\item {\tt p2os\_position}:
+  \begin{itemize}
+  \item Interface: {\tt position} (see Section~\ref{sect:position})
+  \item Configurations: {\tt GET\_GEOM}, {\tt MOTOR\_POWER}, {\tt
+  VELOCITY\_MODE}, {\tt RESET\_ODOM}
+  \item Notes: Provides access to a differential wheelbase.  Only speed control 
+  is supported.
+  \end{itemize}
+\item {\tt p2os\_power}:
+  \begin{itemize}
+  \item Interface: {\tt power} (see Section~\ref{sect:power})
+  \item Configurations: none
+  \item Notes: Provides access to battery charge information.
+  \end{itemize}
+\item {\tt p2os\_sonar}:
+  \begin{itemize}
+  \item Interface: {\tt sonar} (see Section~\ref{sect:sonar})
+  \item Configurations: {\tt GET\_GEOM}, {\tt POWER}
+  \item Notes: Provides access to a sonar array.  Sonar indices start with 0
+  at the front left and increase clockwise.
+  \end{itemize}
+\item {\tt p2os\_sound}:
+  \begin{itemize}
+  \item Interface: {\tt sound} (see Section~\ref{sect:sound})
+  \item Configurations: none
+  \item Notes: Allows you to play pre-recorded sound files on an Amigobot
+  (and other robots?).
+  \end{itemize}
+\end{itemize}
+
+\subsection*{Configuration file options}
+The configuration file options listed in Table~\ref{table:p2os_options}
+control how Player communicates with P2OS.  Any option can be specified for
+any of the drivers listed in the previous section; if an option is specified
+for more than one driver, the value given last will be used.
+
+\begin{table}[ht]
+\begin{center}
+{\small \begin{tabular}{|l|l|c|l|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt port} & string & {\tt "/dev/ttyS0"} & The serial port to be used\\
+\hline
+{\tt radio} & integer & {\tt 0} & Nonzero if a radio modem is being used; 
+zero for a direct serial link\\
+\hline
+\end{tabular}}
+\end{center}
+\caption{{\em Configuration file options for the {\tt p2os\_*} drivers.}}
+\label{table:p2os_options}
+\end{table}
+
+\subsection*{Notes}
+\begin{itemize}
+\item The connection to the P2OS microcontroller is only kept open while
+at least one client has at least one of the P2OS-mediated devices open.
+When the last P2OS device is closed, the connection to P2OS is also closed.
+Implications include: odometry is reset to (0,0,0), motors might be turned off.
+\item Since the P2OS driver uses static C++ class members, only one P2OS
+robot can be controlled by Player at any given time.  If you want to control
+more than one P2OS robots, you'll need to run a separate instance of Player
+for each.
+\item This driver can usually initiate a connection to P2OS even when P2OS was 
+not properly shut down last time.  However, if the connection to P2OS is
+interrupted (e.g., the serial cable is pulled out), then the driver is not
+likely to recover.
+\item This driver likely only works in Linux.
+\end{itemize}

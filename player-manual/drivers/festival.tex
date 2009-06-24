@@ -1,0 +1,44 @@
+\subsection*{Synopsis}
+The {\tt festival} driver provides access to the Festival speech synthesis
+system.  Festival is available separately (also under the GNU GPL) at:
+\verb+http://www.cstr.ed.ac.uk/projects/festival/+.  Unlike most drivers, the
+{\tt festival} driver queues incoming commands, rather than overwriting them.
+When the queue is full, new commands are discarded.
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+
+\begin{itemize}
+\item {\tt speech}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt port} & integer & {\tt 1314} & The TCP port on which Player should
+communicate with Festival.\\
+{\tt libdir} & string & {\tt "/usr/local/festival/lib"} & Festival's library
+directory.\\
+{\tt queuelen} & integer & {\tt 4} & The length of the incoming command
+queue.\\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}

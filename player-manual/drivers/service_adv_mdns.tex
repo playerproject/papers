@@ -1,0 +1,46 @@
+
+\subsection*{Synopsis}
+ The {\tt service\_adv\_mdns} driver publishes a service record for a robot 
+server using multicast DNS ("Rendezvous"), which is part of the IETF draft
+standards for "Zeroconf". This driver uses the Howl library and daemons 
+(see http://www.porchdogsoft.com), and requires Howl to build.  Don't forget to
+run the "nifd " (on Linux) and "mDNSResponder" daemons.  The robot server is published with service
+type "\_player.\_tcp." For each device on the robot, an entry will
+be added to the service text record, like this: 
+{\tt device={\it interface}\#{\it number}({\it driver})}. 
+ 
+The service advertisement drivers provide no interface to clients. 
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt name} & string & "robot" & Name of the service\\
+{\tt description} & string & {\it none} & Longer description of the service,
+included in the text record with key "description="\\
+{\tt tags} & tuple & {\it none} & Extra strings to add to service text record \\
+\hline
+\end{tabularx}}
+\end{center}
+
+

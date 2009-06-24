@@ -1,0 +1,68 @@
+\subsection*{Synopsis}
+
+The {\tt stg\_simulation} driver is used to access Stage models with the
+simulation interface.
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt simulation}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item None
+\end{itemize}
+
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt worldfile} & string & {\tt default.world} & filename of a Stage worldfile to load. Path is specified relative to the current directory.\\
+{\tt host} & string & {\tt localhost} & hostname of the machine running the Stage server.\\
+{\tt port} & int & {\tt 6600} & port number of the Stage server (6600 is Stage's default port)\\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}
+
+You must create an instance of this driver before loading any of the
+stage client drivers (stg\_X). This driver connects to the Stage
+server, loads the specified worldfile, and configures a Stage world
+accordingly. The worldfile must specify the {\tt name} property for
+each model. This name is used in the Player config file to attach a
+stg\_X driver to the model.
+
+Here is an example worldfile:
+
+\begin{verbatim}
+bitmap "background_map.png"
+
+model( 
+ name "robot1" 
+ pose [1 1 0]
+ laser.view [ 0.0 8.0 180.0 ]	
+)
+\end{verbatim}
+
+and it's matching Player config file, where Stage is running on the machine ``zaphod'':
+
+\begin{verbatim}
+simulation{ driver "stg_simulation" host "zaphod" )
+position( driver "stg_position" model "robot1" )
+laser( driver "stg_laser" model "robot1" )
+\end{verbatim}
+
+For details of the Stage simulator, consult the Stage manual.
+

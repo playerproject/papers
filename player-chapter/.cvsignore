@@ -1,0 +1,8 @@
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.idx
+*.log
+STARbook.pdf
+STARbook.ps

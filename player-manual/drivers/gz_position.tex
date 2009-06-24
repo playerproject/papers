@@ -1,0 +1,41 @@
+\subsection*{Synopsis}
+
+The {\tt gz\_postion} driver is used to access Gazebo models that
+support the position interface (generally speaking, these are robots
+such as the Pioneer2AT).  
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt position}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+%\noindent Supported configuration requests:
+%\begin{itemize}
+%\item \verb+PLAYER_POSITION_GET_GEOM+
+%\end{itemize}
+
+
+\subsection*{Configuration file options}
+
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt gz\_id} & string & {\tt NULL} & ID of the Gazebo model. \\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}
+
+Consult the Gazebo manual for more information on the Gazebo
+simulation package.
+

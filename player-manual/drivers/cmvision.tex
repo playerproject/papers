@@ -1,0 +1,67 @@
+
+\subsection*{Synopsis}
+CMVision (Color Machine Vision) is a fast color-segmentation (aka
+blob-finding) software library.  CMVision was written by Jim Bruce at CMU
+and is Freely available under the GNU GPL:\\
+\indent {\tt http://www-2.cs.cmu.edu/$\sim$jbruce/cmvision/}\\
+But you don't have to download CMVision yourself, because Player's 
+{\tt cmvision} driver includes the CMVision code.  The {\tt cmvision}
+driver provides a stream of camera images to the CMVision code and
+assembles the resulting blob information into Player's {\tt blobfinder}
+data format.
+
+The frame-grabbing portion of the {\tt cmvision} driver is modular,
+allowing the user to select the source of camera images.  Currently, the
+following sources are supported (see below for how to select the capture
+source).  Note that support for each source is compiled only if the
+required libraries and/or kernel features are detected.
+\begin{itemize}
+\item IEEE 1394 (aka Firewire) cameras; requires the {\tt libraw1394} and
+{\tt libdc1394} development packages (both are Freely available)
+\item Video4Linux (aka V4L) cameras; requires V4L headers
+\item Video4Linux2 (aka V4L2) cameras; requires V4L2 support in your
+kernel ({\em currently disabled})
+\item A video source that supports Player's internal {\tt camera}
+interface, such as the Gazebo camera driver
+\end{itemize}
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt blobfinder}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\subsection*{Configuration file options}
+\begin{center}
+{\small \begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt capture} & string & {\tt "1394"} & Capture source (should be {\tt
+"1394"}, {\tt "V4L2"}, {\tt "V4L"}, or {\tt "camera"})\\
+{\tt colorfile} & string & {\tt ""} & (absolute?) path to the CMVision configuration file.\\
+{\tt height} & integer & {\tt 240} & Height of the camera images (pixels).\\
+{\tt width} & integer & {\tt 320} & Width of the camera images (pixels).\\
+\hline
+\end{tabularx}}
+\end{center}
+
+\subsection*{Notes}
+\begin{itemize}
+\item This driver (or at least its underlying video capture code) only works in
+Linux.
+\item Consult the CMVision documentation for details on writing a CMVision
+configuration file.
+\end{itemize}
+

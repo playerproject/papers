@@ -1,0 +1,124 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%% author.tex %%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% sample root file for your contribution to a
+%
+% "contributed book" (global)
+%
+% Use this file as a template for your own input.
+%
+%%%%%%%%%%%%%%%%%%%%%%%% Springer-Verlag %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%% The following preamble of the contribution has been commented out
+%%% to allow LaTeX to \include that document into the main book
+
+% RECOMMENDED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\documentclass{svmult}
+
+%% choose options for [] as required from the list
+%% in the Reference Guide, Sect. 2.2
+
+%\usepackage{makeidx}         % allows index generation
+%\usepackage{graphicx}        % standard LaTeX graphics tool
+                              % when including figure files
+%\usepackage{multicol}        % used for the two-column index
+%\usepackage[bottom]{footmisc}% places footnotes at page bottom
+% etc.
+% see the list of further useful packages
+% in the Reference Guide, Sects. 2.3, 3.1-3.3
+
+%\makeindex             % used for the subject index
+                       % please use the style sprmidx.sty with
+                       % your makeindex program
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\begin{document}
+
+\title*{Sidebar - CORBA: Common Object Request Broker Architecture}
+% Use \titlerunning{Short Title} for an abbreviated version of
+% your contribution title if the original one is too long
+\author{Davide Brugali}
+% Use \authorrunning{Short Title} for an abbreviated version of
+% your contribution title if the original one is too long
+\institute{Universit\'a degli Studi di Bergamo, Italy
+\texttt{brugali@unibg.it} }
+%
+% Use the package "url.sty" to avoid
+% problems with special characters
+% used in your e-mail or web address
+%
+\maketitle
+
+CORBA (Common Object Request Broker Architecture) is a standard
+for distributed middleware defined by the Object Management Group
+(OMG), a consortium of more than 700 organisations including
+software industry leaders such as Sun, HP, IBM, Microsoft and
+Rational. This architecture has reached a good level of maturity
+and is now implemented in more than ten commercial products.
+
+The basic component of the architecture is the Object Request
+Broker (ORB), which should be installed on each connected host.
+The ORB uses the Stub/Skeleton mechanism for remote communication
+between client and server objects. The stub and the skeleton of a
+server object are generated at compile-time from a declarative
+specification of the server's interface in the language-neutral
+Interface Definition Language (IDL). The interface describes which
+methods the server object supports, which events the object can
+trigger, and which exceptions the object raises. The server object
+can be implemented in any programming language (C, C++, Java,
+etc.). The ORB installed on the server side is in charge of
+translating the incoming IDL service requests from the remote
+clients into the server's method invocations. The IDL supports the
+declaration of only basic type arguments, which have to be passed
+to a remote server. The connection between the stub and the
+skeleton is established using the Remote Procedure Call (RPC)
+mechanism.
+
+The ORB supports location transparency, as it provides the client
+with a reference to the server object regardless of its network
+location. The client side ORB dispatches service requests to the
+server side ORB transparently. Since CORBA can be implemented
+using different technologies, the Internet Inter-ORB Protocol
+(IIOP) defines the standard communication protocol for
+inter-vendor ORB compatibility.
+
+The ORB supports the control of the threading policy used by the
+servers, such as one-thread-per request and
+one-thread-per-objects. This threading capability is at the basis
+of recent CORBA extensions towards a real-time ORB (see
+\cite{CORBA-RT} for a comprehensive survey on recent results in
+developing a standard real-time CORBA).
+
+Server objects can publish the IDL specifications of their
+interface using the Interface Repository API. The Interface
+Repository is used to implement two services for object location.
+The Trader Service is similar to the yellow pages. It allows
+client objects to find out which distributed server objects
+support a given interface. The Trader Service returns a list of
+references to the objects, which have registered that interface
+and a description of the usage constraints for each object. The
+Naming Service allows client objects to identify which interface
+is supported by an object that has been registered with a given
+name. In some cases, the client object has to request the service
+of a server object, whose interface was not known at compile-time.
+This means that the client object does not have a stub of the
+remote server object, but it can use a generic interface, called
+Dynamic Invocation Interface that makes it possible to construct
+method invocations at run-time.
+
+Other common services are the Persistent object service for
+storing and retrieving objects in/from a persistent storage, the
+Transaction service, the Life-cycle service to create, delete,
+copy and move objects, and the Event service for asynchronous
+communication among distributed objects. The real time CORBA
+standard specifies an optional Scheduling service, which uses the
+primitives of the real-time ORB to achieve a uniform scheduling
+policy in CORBA systems.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\printindex
+%\end{document}

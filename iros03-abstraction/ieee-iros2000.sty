@@ -1,0 +1,96 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  IROS.sty  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% ===========================================================================
+%%%  @LaTeX-style-file{
+%%%    author          = "Noriaki Ando",
+%%%    version         = "0.1",
+%%%    date            = "10-January-2000",
+%%%    filename        = "IROS.sty",
+%%%    address         = "Hashimoto Lab, IIS Univ. of Tokyo, Japan"
+%%%    email           = "n-ando@iis.u-tokyo.ac.jp",
+%%%    keywords        = "LaTeX, IROS Conference, publisher style",
+%%%    mainserver      = "http://iros2000.iis.u-tokyo.ac.jp",
+%%%    docstring       = "This is a LaTeX style file for preparation
+%%%                       of submission and final versions of articles
+%%%                       to be published in IROS proceedings.
+%%%                       The font size is 10 points.
+%%%
+%%%                        Usage:
+%%%                         \documentstyle[IROS,options...]{article}
+%%%                         \author{..}
+%%%                         \title{..}
+%%%                         \maketitle
+%%%                         \begin{Abstract}...\end{Abstract}
+%%%                         \section{}
+%%%                         \subsection{}
+%%%                         \subsubsection{}
+%%%                               :
+%%%                         \begin{Acknowledgment}...\end{Acknowledgment}
+%%%                         \begin{thebibliography}{99}
+%%%                         \bibitem{biblabel}
+%%%                               :
+%%%                         \end{thebibliography}
+%%%                         \end{document}
+%%%
+%%%                       In order to remove headers, insert
+%%%                          \thispagestyle{empty}\pagestyle{empty} or
+%%%                          \thispagestyle{plain}\pagestyle{plain}
+%%%                       right after the \maketitle command!!
+%%%
+%%%  }
+%%% ===========================================================================
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\typeout{****************************************}
+\typeout{Document Style `IROS' <10-January-2000>.}
+\typeout{     for IROS2000 conference proceedings}
+\typeout{****************************************}
+
+%% page layout settings
+\textheight	8.75in
+\columnsep	2.0pc
+\textwidth	6.8in
+\footheight	0.0in
+\topmargin	0.25in
+\headheight	0.0in
+\headsep	0.0in
+\oddsidemargin	-.19in
+\parindent	1pc
+\parskip	0cm
+
+\flushbottom
+\twocolumn 
+
+%as LaTeX considers descenders in its calculation of interline spacing,
+%to get 12 point spacing for normalsize text, must set it to 10 points
+\def\@normalsize{\@setsize\normalsize{12pt}\xpt\@xpt
+\abovedisplayskip 10pt plus2pt minus5pt\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip \z@ plus3pt\belowdisplayshortskip 6pt plus3pt
+minus3pt\let\@listi\@listI} 
+
+%need an 11 pt font size for subsection and abstract headings
+\def\subsize{\@setsize\subsize{11pt}\xipt\@xipt}
+
+%make section titles bold and 12 point, 2 blank lines before, 1 after
+\def\section{\@startsection {section}{1}{\z@}{24pt plus 2pt minus 2pt}
+{12pt plus 2pt minus 2pt}{\large\bf}}
+
+%make subsection and subsubsection titles bold and 11 point, 1 blank line before, 1 after
+\def\subsection{\@startsection {subsection}{2}{\z@}{12pt plus 2pt minus 2pt}
+{12pt plus 2pt minus 2pt}{\subsize\bf}}
+
+\def\subsubsection{\@startsection {subsubsection}{2}{\z@}{5pt}
+{2pt}{\subsize\bf}}
+
+\newenvironment{Abstract}{\subsection*{\centering Abstract}\em}{\par\rm\normalsize\unboldmath\medskip}
+
+\newenvironment{Acknowledgment}{\subsection*{Acknowledgments}}{\par\rm\normalsize\unboldmath\medskip}
+
+% Debug floats manually
+%\def\topfraction{1.0}
+%\def\dbltopfraction{1.0}
+%\def\bottomfraction{1.0}
+%\def\textfraction{0.0}
+%\def\floatpagefraction{0.8}
+%\def\dblfloatpagefraction{0.8}
+
+\pagestyle{empty}
+% Have Fun.

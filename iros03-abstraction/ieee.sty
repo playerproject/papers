@@ -1,0 +1,110 @@
+% ieee.sty
+% 
+% Template for producing IEEE-format articles using LaTeX.
+% hacked about by RV 5/2/97 - IEEE measurements unchanged
+% hacked about more by BPG 9/7/01 - IEEE measurements changed a bit to
+%                                   match ICRA 2002 guidelines
+% Invoke as:
+%
+%     \documentclass[10pt,twocolumn]{article}
+%     \usepackage{ieee}
+
+%turn off page numbering
+\pagestyle{empty}
+
+% Set dimensions of columns, gap between columns,
+% and space between paragraphs
+\setlength{\textheight}{9.0in}
+\setlength{\columnsep}{0.375in}
+\setlength{\textwidth}{6.875in}
+\setlength{\topmargin}{0.0in}
+\setlength{\headheight}{0.0in}
+\setlength{\headsep}{0.0in}
+\setlength{\oddsidemargin}{-0.1875in}
+\setlength{\parindent}{1pc}
+
+% The following is copied from art10.sty and modified
+% to conform to IEEE format
+
+% Since LaTeX considers descenders in its calculation of interline spacing,
+% to obtain 12 point spacing for normalsize text, it must be set to 10 points
+\def\@normalsize{\@setsize\normalsize{12pt}\xpt\@xpt
+\abovedisplayskip 10pt plus2pt minus5pt\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip \z@ plus3pt\belowdisplayshortskip 6pt plus3pt
+minus3pt\let\@listi\@listI} 
+
+% An 11 pt font size is required for subsection and abstract headings
+\def\subsize{\@setsize\subsize{12pt}\xipt\@xipt}
+
+% Make section titles bold and 12 point, 2 blank lines before, 1 after
+\def\section{\@startsection {section}{1}{\z@}{24pt plus 2pt minus 2pt}
+{12pt plus 2pt minus 2pt}{\large\bf}}
+
+% Make subsection titles bold and 11 point, 1 blank line before, 1 after
+\def\subsection{\@startsection {subsection}{2}{\z@}{12pt plus 2pt minus 2pt}
+{12pt plus 2pt minus 2pt}{\subsize\bf}}
+
+% Make title bold and 14 pt font (LaTeX default is non-bold, 16 pt)
+\let\orig@title\title
+\def\title#1{\orig@title{\Large\bf #1}}
+
+% Don't print date in title
+\date{}
+
+% For single author, use the following:
+% \author{
+% I.~M.~Author \\
+% \\
+% My Department \\
+% My Institute \\
+% My City, Postcode, Country
+% }
+
+% For multiple authors, space out by 8em
+\def\and{%%                             % \begin{tabular} 
+\end{tabular}\hskip 8em plus .17fil\begin{tabular}[t]{c}%% \end{tabular}
+}
+ 
+% Thus, for two or more authors, do something like the following:
+% \author{
+% \begin{tabular}[t]{c}
+% I.~M.~Author \\
+% \\
+% My Department \\
+% My Institute \\
+% City, Postcode, Country
+% \end{tabular}
+% \and
+% \begin{tabular}[t]{c}
+% M.~Y.~Coauthor \\
+% \\
+% Coauthor Department \\
+% Coauthor Institute \\
+% City, Postcode, Country
+% \end{tabular}
+% }
+
+% We must redefine \maketitle to obtain no page number on the first page
+% Blame Leslie Lamport for redefining \thispagestyle in \maketitle!
+\let\orig@maketitle\maketitle
+\def\maketitle{\orig@maketitle\thispagestyle{empty}}
+
+% Abstract in italics ("emphasised")
+\def\abstract{
+\subsection*{\centering Abstract}
+\em
+}
+
+\def\endabstract{
+%end italics mode
+\em
+}
+
+% Bibliography in 9 point, tight spacing
+\let\orig@thebibliography\thebibliography
+\let\orig@endthebibliography\endthebibliography
+\def\thebibliography#1{\renewcommand{\baselinestretch}{0}\small\begin{orig@thebibliography}{#1}\hfuzz .25\p@}
+\def\endthebibliography{\end{orig@thebibliography}}
+
+
+

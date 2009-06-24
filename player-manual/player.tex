@@ -1,0 +1,2973 @@
+
+% Desc: Player manual
+% Author: Brian Gerkey, Andrew Howard
+% CVS: $Id: player.tex,v 1.111 2004/07/23 18:37:49 gerkey Exp $
+
+\documentclass[11pt]{report}
+\usepackage{times}
+\usepackage{tabularx}
+%\usepackage{draftcopy}
+% make all captions small and slanted
+\usepackage[small,sl]{caption}
+\usepackage{fullpage}
+\usepackage{epsfig}
+
+% Put something to delineate interfaces
+\newcommand{\newinterface}{\newpage}
+\newcommand{\newdriver}{\newpage}
+
+\newcommand{\newdriverex}[2]{\newpage\section{\tt #1} 
+  \label{sect:#1_driver} \subsection*{Authors} #2}
+\newcommand{\newdriverexx}[3]{\newpage\section{\tt #1} 
+  \label{sect:#2_driver} \subsection*{Authors} #3}
+
+% a useful command for inserting eye-catching notes
+\newcommand{\note}[1]{
+\begin{center}
+\begin{tabularx}{.9\textwidth}{cX}
+\hline
+{\bf Note}: & #1\\
+\hline
+\end{tabularx}
+\end{center}}
+
+\def\VERSION {1.5}
+\def\DEFAULTPORT {6665}
+\def\HOMEPAGE {{\tt http://playerstage.sourceforge.net}}
+\def\RADISHHOMEPAGE {{\tt http://radish.sourceforge.net}}
+
+\def\gerkey {Brian P. Gerkey {\tt gerkey(at)stanford.edu}}
+\def\vaughan {Richard T. Vaughan {\tt vaughan(at)sfu.ca}}
+\def\ahoward {Andrew Howard {\tt ahoward(at)usc.edu}}
+\def\nate {Nate Koenig {\tt nkoenig(at)usc.edu}}
+\def\esben {Esben \O{}sterg\aa{}rd}
+\def\kasper {Kasper St\o{}y}
+\def\sweeney {John Sweeney {\tt sweeney(at)cs.umass.edu}}
+\def\andy {Andy Martignoni III {\tt ajm7(at)cs.wustl.edu}}
+\def\josh {Josh Bers {\tt jbers(at)bbn.com}}
+\def\boyoon {Boyoon Jung {\tt boyoon(at)robotics.usc.edu}}
+\def\nik {Nik Melchior}
+\def\reed {Reed Hedges {\tt reed(at)interreality.org
+}}
+\def\brewer {Matt Brewer {\tt mbrewer(at)andrew.cmu.edu}}
+\def\cvjones {Chris Jones {\tt cvjones(at)robotics.usc.edu}}
+\def\mckenna {James McKenna}
+\def\brendan {Brendan Burns {\tt bburns(at)cs.umass.edu}}
+\def\ben {Ben Grocholsky {\tt bpg(at)grasp.upenn.edu}}
+\def\toby {Toby Collett {\tt t.collett(at)auckland.ac.nz}}
+\def\dfs {David Feil-Seifer {\tt dfseifer(at)cs.usc.edu}}
+\def\pouya {Pouya Bastani}
+\def\pawel {Pawel Zebrowski {\tt pzebrows(at)sfu.ca}}
+\def\yannick {Yannick Brosseau {\tt yannick.brosseau(at)usherbrooke.ca}}
+
+\begin{document}
+\setcounter{page}{0}
+\pagenumbering{roman}
+
+\titlepage
+
+\begin{tabular}{lcr}
+  \begin{tabular}{c}
+	Player/Stage project\\
+        \epsfig{width=3cm,file=notext_ps_logo.eps}
+   \end{tabular}
+  &
+  \hspace{5cm}
+  &
+  \begin{tabular}{r}
+    {\bf Robotics Laboratory}\\
+    Stanford University\\
+    Stanford, California, USA\\
+    \vspace*{2em}\\
+    {\bf Robotics Research Laboratory}\\
+    University of Southern California\\
+    Los Angeles, California, USA\\
+    \vspace*{2em}\\
+    {\bf Autonomy Laboratory}\\
+    Simon Fraser University\\
+    Burnaby, British Columbia, Canada\\
+  \end{tabular}
+\end{tabular}
+
+\vspace{5cm}
+\centerline{\huge{Player}}
+\vspace{0.5cm}
+\centerline{\large{Version \VERSION\ User Manual}}
+\vspace{2cm}
+
+\centerline{\large Brian P. Gerkey\\ Richard T. Vaughan\\ Andrew Howard}
+\vspace{1cm}
+%\centerline{Technical Report IRIS-00-392}
+%\centerline{{\tt http://iris.usc.edu/${}_{\tilde{}}$\,irislib}}
+%\vspace{1cm}
+%\centerline{This report may not contain the most current documentation on}
+%\centerline{Player.  For the latest documentation, consult the Player homepage:}
+%\centerline{{\tt http://fnord.usc.edu/player}}
+
+\centerline{This document may not contain the most current documentation on}
+\centerline{Player.  For the latest documentation, visit the Player/Stage project online:}
+\centerline{\HOMEPAGE}
+
+\vspace{3cm}
+
+\centerline{\today}
+
+\tableofcontents
+\listoffigures
+\listoftables
+\newpage
+
+% reset page number to start with 1
+\pagenumbering{arabic}
+\setcounter{page}{1}
+% set the section counter to -1 to make the first section 0
+\setcounter{chapter}{-1}
+%-----------------------------------------------------------------------------
+\chapter{Metadata}
+\section{How to Read this Manual}
+We know that you are dying to read this entire document, but let us give
+you some advice that may save you some time.  If you are only planning
+to use Player with the Stage simulator, then you should only need to read
+Chapters~\ref{chapt:intro}~and~\ref{chapt:devices} and the manual appropriate
+to the language in which you will write your programs.  For example, if
+you plan to use the C++ client utilities, then read {\em Player C++ Client
+Library Reference Manual}.  The manual that you are currently reading only 
+includes documentation for
+the C reference client.  Language-specific manuals are provided with the
+distribution (and are available from the homepage) for C++, Tcl, and LISP.
+Client libraries have also been contributed by users for other languages,
+including Python, Java, and Visual C++.  These other client libraries are 
+distributed separately; see the contributed clients page for details:\\
+\indent \HOMEPAGE{\tt /clients/clients.html}\\
+If you intend to use Player with physical hardware, then you should also read 
+Chapters~\ref{chapt:running}~\&~\ref{chapt:configfile} and consult
+Chapter~\ref{chapt:drivers} in order to familiarize yourself
+with the details of connecting the hardware and telling Player
+where it is.  If you are interested in modifying an existing
+client library or writing your own, then you should also read
+Chapters~\ref{chapt:socket}~\&~\ref{chapt:interfaces}, which describe the
+message protocol and data formats between client and server.  Finally,
+if you want to hack on the server in any way (e.g., add a new device
+driver, write your own Player server for a different language/platform),
+then you should also read Chapter~\ref{chapt:architecture}, which will
+(hopefully) provide all the information that you will need.
+
+\section{A Note on Versions}
+This document describes the Player robot server version \VERSION.
+It applies to Player versions $>=$ \VERSION\ (at least until we put out
+another manual).  Since the previous version, many things have likely
+changed.  Thus, this manual does {\em not} apply to older versions
+of Player.  You can find an older manual at the Player homepage:
+\indent \HOMEPAGE{\tt /doc/doc.html}\\
+In addition to providing access to physical hardware, Player is also the
+interface to the robot simulators Stage and Gazebo.  The three software
+packages evolve independently, and so their version numbers have no
+meaningful correspondence (it used to be the case that Player and Stage
+versions were matched exactly; this is no longer true).  For information on
+which versions of Player and the simulators are compatible, see the online
+FAQ:
+\indent \HOMEPAGE{\tt /faq.html}\\
+
+
+%-----------------------------------------------------------------------------
+\chapter{Introduction}
+\label{chapt:intro}
+Player was originally developed by Brian Gerkey and Kasper St\o{}y; the
+Stage simulator interface was originally written by Richard T.~Vaughan
+and Andrew Howard.  Gazebo and its Player interface were written by Nate
+Koenig and Andrew Howard.  Now a part of the larger Player/Stage project,
+Player's development is administered by Brian Gerkey, Andrew Howard,
+and Richard T.~Vaughan.
+
+Player has historically been developed primarily at the Robotics Research
+Lab of the University of Southern California, but the current state of
+Player is the result of contributions from a great many developers and
+users in unversities, companies, and government labs around the world.
+For a list of significant contributors, see:\\
+\indent \HOMEPAGE{\tt /credits.html}\\
+For a list of known users, see:\\
+\indent \HOMEPAGE{\tt /users/users.html}
+
+We have tried to make this documentation as complete as possible.
+Hopefully there is sufficient information here for you to use Player
+and the provided clients as well as write your clients in your
+language of choice. 
+
+What do you like? What do you hate?  How do you use it?
+Questions and comments regarding Player should be directed to
+our mailing lists:\\
+\indent {\tt http://sourceforge.net/mail/?group\_id=42445}\\
+and bug / feature request tracker:\\
+\indent {\tt http://sourceforge.net/tracker/?group\_id=42445}
+
+\section{License}
+\noindent {\bf Player is Free Software, copyrighted by its authors, and
+released under the GNU General Public License (GNU GPL):}
+
+\begin{quote}
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+ USA
+\end{quote}
+
+\noindent {\bf The included Player client libraries are also
+simultaneously released under the GNU Lesser General Public License
+(GNU LGPL):}
+
+\begin{quote}
+This library is free software; you can redistribute it and/or 
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+USA
+\end{quote}
+
+\section{Description}
+What is Player? Player is a robot device server.  It gives you simple
+and complete control over the physical sensors and actuators on your
+mobile robot.  When Player is running on your robot, your client control
+program connects to it via a standard TCP socket, and communication
+is accomplished by the sending and receiving of some of a small set of
+simple messages.
+
+Player is designed to be language and platform independent.  Your client
+program can run on any machine that has network connectivity to your robot,
+and it can be written in any language that can open and control a TCP socket.
+Client-side utilities are currently available in C, C++, Tcl, LISP, Java,
+and Python.  Further, Player makes no assumptions about how you might want
+to structure your robot control programs.  In this way, it is much more
+``minimal'' than other robot interfaces.  If you want your client to be a
+highly concurrent multi-threaded program, write it like that.  If you like
+a simple read-think-act loop, do that.  If you like to control your robot
+interactively, try our Tcl client (or write your own client utilities in
+your favorite interactive language).
+
+Player is also designed to support virtually any number of clients.  Have you
+ever wanted your robots to ``see'' through each others' eyes?  Now they can.
+Any client can connect to and read sensor data from (and even write motor
+commands to) any instance of Player on any robot.  Aside from distributed
+sensing for control, you can also use Player for monitoring of experiments.
+For example, while your C++ client controls a robot, you can run a Tk GUI
+client elsewhere that shows you current sensor data, and a Python client
+that logs data for later analysis.  Also, on-the-fly device requests allow
+your clients to gain access to different sensors and actuators as needed
+for the task at hand.
+
+In addition to controlling the physical hardware, Player can be used to
+interface to the robot simulators Stage and Gazebo.
+
+Last but not least, Player is Free Software.  If you don't like how
+something works, change it.  And please send us your patch!
+
+\subsection*{Example of Player Operation}
+\begin{figure}[ht]
+ \centering
+ \epsfig{file=exampleuse.eps, height=85mm}
+  \caption{{\em Example client/server interaction}}
+\label{figure:exampleuse}
+ \end{figure} 
+
+As a simple example of the use of Player, consider
+Figure~\ref{figure:exampleuse} (note that for clarity, we leave out several
+protocol-level interactions).  The server is executing locally on the computer
+to which the devices of interest are connected.  In many cases, this computer
+is the robot itself, but it could also be, for example, a desktop machine
+attached to a SICK laser range-finder.  The client can execute anywhere that
+has network connectivity to the machine hosting the server.
+
+First, the client establishes a TCP socket connection to the server.
+The client next sends some messages to the server to {\em open} the devices
+in which the client is interested.  After that, the server continuously
+feeds data from those devices to the client, and the client exerts control
+by sending appropriate commands back to the server.  Very simple.
+
+
+\section{System Requirements}
+\label{sect:sysreq}
+Player was originally developed on x86/Linux systems, and it is still used
+primarily on that platform.  However, with the help of the GNU Autotools
+(which rule), Player now builds and runs on most POSIX platforms,
+including a number of cross-compiler configurations.  A notable exception
+is that Player does {\bf not} run on Windows, and we have {\bf no}
+plans to port it to Windows (however, a Cygwin port should be doable;
+if you're interested in doing this, let us know).  The current status
+of Player for the platforms where it is known to build and run can be
+found on the project website. If you have an addition or correction,
+please let us know.
+
+To build Player ``out of the box'', you need one of the supported
+systems and a recent version of GNU {\tt gcc/g++} (we use some GNU extensions to
+C, so other compilers will {\bf not} work).
+
+\section{Getting Player}
+\label{sect:gettingplayer}
+The Player homepage is:\\
+\indent \HOMEPAGE\\
+Check there for the latest versions of the server and this
+document.
+
+\section{Bugs}
+Depite our diligent testing, Player is bound to contain some bugs.
+If you manage to break something, or if some aspect of Player's behavior seems 
+wrong or non-intuitive, let us know.  
+
+To report a bug or request a feature, {\bf please} do {\bf not} send
+mail directly to the developers.  Instead, use the tracking facilities
+provided at SourceForge; you can find a link on the Player homepage
+(see Section~\ref{sect:gettingplayer}).  Include as much information as
+possible, including at least Player version and OS version.  A detailed
+description of what happened will enable us (hopefully) to repeat and
+analyze the problem.
+
+\section{On the Name Player}
+Player was originally named Golem, and the Stage simulator was originally
+named Arena.  However, we soon discovered that many,
+many, many pieces of robotics-related software already use those names.
+So, we had to make a change.  We needed names that capture the now-integral
+relationship between the server and simulator, so we chose Player and
+Stage, as suggested by a living Englishman, in reference to a
+very dead Englishman.
+
+\vspace*{1em}
+
+\noindent
+From {\em As You Like It} Act II, Scene 7:
+\begin{quote}
+  ``All the world's a stage, \\
+  And all the men and women merely players: \\
+  They have their exits and their entrances; \\
+  And one man in his time plays many parts,''\\
+\end{quote}
+
+\noindent
+From {\em Macbeth} Act V, Scene 5:
+\begin{quote}
+  ``Life's but a walking shadow, a poor player \\
+  That struts and frets his hour upon the stage \\
+  And then is heard no more: it is a tale \\
+  Told by an idiot, full of sound and fury, \\
+  Signifying nothing.''\\
+\end{quote}
+
+\section{Acknowledgements}
+This work is supported in part by the Intel Foundation, DARPA grant
+DABT63-99-1-0015 (MARS), NSF grant ANI-9979457 (SCOWR), DARPA contract
+DAAE07-98-C-L028 (TMR), ONR Grants N00014-00-1-0140 and N0014-99-1-0162,
+and JPL Contract No. 1216961.
+
+We thank the many developers and users who have contributed so much to the
+success of the project, especially: 
+Maxim Batalin,
+Josh Bers,
+Matt Brewer,
+Brendan Burns,
+Jason Douglas,
+Jakob Fredslund,
+Ben Grocholsky,
+Kim Jinsuck,
+Chris Jones,
+Boyoon Jung,
+Marin Kobilarov,
+Nathan Koenig,
+James McKenna,
+Alex Makarenko,
+Andy Martignoni III,
+Nik Melchior,
+Dave Naffin,
+Esben \O{}sterg\aa{}rd,
+Dylan Shell,
+Gabe Sibley,
+Pranav Srivastava,
+Kasper St{\o}y,
+John Sweeney 
+and
+Doug Vail.
+
+Thanks also to SourceForge.net for project hosting.
+
+\section{Citations}
+If you find Player useful in your work, we would greatly appreciate
+your mentioning that fact in papers that you publish.  We have presented
+papers on Player in peer-reviewed conferences; the following papers are
+the definitive references when citing Player
+\cite{VaughanGerkeyHoward03a,GerkeyVaughan01a,GerkeyVaughanHoward03}:
+\begin{itemize}
+\item Richard~T. Vaughan, Brian~P. Gerkey, and Andrew Howard.
+\newblock On device abstractions for portable, reusable robot code.
+\newblock In {\em Proc. of the IEEE/RSJ Intl. Conf. on Intelligent Robots and
+  Systems (IROS)}, pages 2121--2427, Las Vegas, Nevada, October 2003.
+\item
+Brian~P. Gerkey, Richard~T. Vaughan, and Andrew Howard.
+\newblock {The Player/Stage Project: Tools for Multi-Robot and Distributed
+  Sensor Systems}.
+\newblock In {\em Proc. of the Intl. Conf. on Advanced Robotics (ICAR)}, pages
+  317--323, Coimbra, Portugal, July 2003.
+\item
+Brian~P. Gerkey, Richard~T. Vaughan, Kasper St\o{}y, Andrew Howard,
+Maja~J Matari\'c and Gaurav~S Sukhatme.
+\newblock {Most Valuable Player: A Robot Device Server for Distributed
+  Control}.
+\newblock In {\em Proc. of the IEEE/RSJ Intl. Conf. on Intelligent Robots and
+  Systems (IROS)}, pages 1226--1231, Wailea, Hawaii, October 2001.
+\end{itemize}
+If you have space (and are feeling generous), you can also insert a footnote
+similar to the following:
+\begin{quote}
+Player is freely available under the GNU General Public License from
+http://playerstage.sourceforge.net.
+\end{quote}
+By including such acknowledgements, you do more than feed our egos and further 
+our academic careers.  You spread the word about Player, which will bring more
+users and developers, as well as please our funders, ensuring that we will
+continue to be allowed to hack on the software.
+%-----------------------------------------------------------------------------
+\chapter{Running Player}
+\label{chapt:running}
+\section{Building and Installing Player}
+System requirements, including platforms on which Player is known to build and
+run, are given in Section~\ref{sect:sysreq}.  If you've got one of those
+systems and the necessary tools (e.g., {\tt g++}), then the build is
+pretty simple.
+
+First, open your source tarball.  Generic instructions are given in 
+{\tt INSTALL}, and more information is in {\tt README}.  If you don't feel
+like reading those files, the following should suffice:
+\begin{verbatim}
+  $ ./configure
+  $ make
+  $ make install
+\end{verbatim} %$
+Player will be installed in the default location: {\tt /usr/local/}.
+{\bf Note that this location differs from older versions, which were
+installed in {\tt \$HOME}}.  The {\tt configure} script accepts a number
+of options for customizing the build process, including changing the
+install location and adding/removing device drivers.  For example,
+to change the install location for Player, do:
+\begin{verbatim}
+  $ ./configure --prefix <path>
+\end{verbatim} %$
+To see a complete list of such options (e.g., to enable drivers that
+aren't built by default), do:
+\begin{verbatim}
+  $ ./configure --help
+\end{verbatim} %$
+
+
+\section{Command Line Arguments}
+\label{sect:commandline}
+\begin{table}[ht]
+\begin{center}
+{\normalsize
+\begin{tabularx}{\columnwidth}{|c|X|}
+\hline
+Argument & Meaning  \\
+\hline
+-h & Print out usage statement.\\
+\hline
+-p $<$port$>$ & The Player server should listen on TCP port $<$port$>$.  Default
+is {\tt \DEFAULTPORT}. \\
+\hline
+-s $<$path$>$ & Run Player as a child process under the Stage simulator,
+and use memory-mapped IO through the files found in the directory
+$<$path$>$ to communicate with the simulator.  Note that \verb+-s+
+should only be given manually when you are debugging Player; it is really
+intended for use only when Player is spawned by Stage.\\
+\hline
+-g $<$id$>$ & Connect to a Gazebo simulation engine with the given id.\\
+\hline
+-r $<$logfile$>$ & Read data from a stored log file instead of real
+sensors.  For use with the {\tt readlog} driver. \\
+\hline
+-d $<$shlib$>$ & The Player server should load the shared object $<$shlib$>$.
+This option is generally used to load device drivers from dynamic libraries.
+See Section~\ref{sect:shared-lib} for information on building such a library.\\
+\hline
+-k $<$key$>$ & The Player server should enable authentication.  Clients will
+be required to send an authentication request containing $<$key$>$ before Player
+will service them.  This option is usually only specified through Stage;
+Default is to disable authentication.\\
+\hline
+$<$configfile$>$ & Player should load and configure device drivers according to
+the indicated configuration file.  See Chapter~\ref{chapt:configfile} for
+details.\\
+\hline
+\end{tabularx}
+}
+\end{center}
+\caption{{\em Player command-line arguments}}
+\label{table:commandlinefig}
+\end{table}
+
+Player is executed as follows:
+\begin{verbatim}
+  $ player [-p <port>] [-s <path>] [-g <id>] [-r <path>] [-d <shlib>] 
+           [-k <key>] [<configfile>]
+\end{verbatim}  % $ - I put this here just to stop emacs getting confused. ahoward
+The command-line arguments are summarized in
+Table~\ref{table:commandlinefig}, and the configuration file syntax is
+described in Chapter~\ref{chapt:configfile}.  Note that you can specify
+at most one of {\tt -s}, {\tt -g}, or {\tt -r}; if you specify none of
+these options, the default is to connect to physical hardware.
+
+\section{Visualization tools}
+Once you have Player running, either on a real robot or under Stage, the
+first thing that you might want to do is have a look at what your robot
+``sees.''  For this purpose, we provide a graphical visualization tool
+that we have found most useful in our work.  This tool, {\tt playerv},
+can be found in the Player distribution, and is installed alongside {\tt
+player} itself in the subdirectory {\tt bin}.  Enjoy.
+%-----------------------------------------------------------------------------
+\chapter{Device Overview}
+\label{chapt:devices}
+In Player, we use the notion of a {\em device} in much the same way as most
+UNIX systems.  That is, a device is an abstract entity that provides a standard
+interface to some service.  Devices behave similarly to files in that they
+must be {\em opened} with the correct access mode before use, and {\em closed}
+afterward.  Once open, a device can be read from, written to, and configured
+(note the similarity to UNIX's {\tt read()}, {\tt write()}, and {\tt ioctl()}),
+although not every device supports all three operations.  A conceptual overview
+of these device operations is given in Section~\ref{sect:overview-device-ops}.
+
+As in UNIX, devices in Player do {\bf not} have a one-to-one mapping to
+physical hardware components, and with good reason.  For example, it so
+happens that when retrieving odometry data from the ActivMedia Pioneer 2-DX
+robot, one also receives sonar range data.  A client program that only wants
+to log the robot's current position should not also receive unwanted sonar
+range data; in fact, the client should be completely unaware of the coupling
+that exists inside the robot, because it is irrelevant.  In order to present
+an intuitive interface to the client, Player controls one physical piece of
+hardware, the P2OS microcontroller, but implements two different devices:
+{\tt position} and {\tt sonar}.  These two devices can be opened, closed, and
+controlled independently, relieving the client of the burden of remembering
+details about the internals of the robot.  In addition to making such logical
+divisions, the device abstraction allows us to implement more sophisticated
+devices that do not simply return sensor data but rather filter or process
+it in some way.
+
+Besides controlling different kinds of devices, Player can control multiple
+instances of a given kind of device.  For example, if you have 2 SICK laser
+range-finders attached to your robot, then you can access both of them through
+the use of indices (see Chapter~\ref{chapt:configfile} for how to tell Player
+about the devices and Section~\ref{sect:messageformat} for protocol-level
+details of indexing).  In fact, all device access is made by index; it just
+happens that most of the time, the index is $0$ because there is only one
+of each device.
+
+{\bf NOTE:} Player implements {\em no device locking}.  That is, many
+clients can have concurrent access to a given device, and they can
+concurrently command it.  Player makes no attempt to arbitrate among
+the clients, and the command that is actually sent to the device will
+be determined by the rate at which the clients are sending commands,
+as well as some subtle timing issues.  We purposefully chose not to
+implement any device locking, as it results in a more flexible system
+in which interesting ideas such as large-scale collaborative control
+can be explored (e.g., \cite{GerkeyMataricSukhatme02}).
+
+\section{Device access: data, command, configuration}
+\label{sect:overview-device-ops}
+\subsection*{Data}
+When a client {\tt read}s from a device, the client receives the device's
+current data.  For a Player device, the term {\em data} is used to refer to
+the salient state of the device.  Of course, this definition is not objective,
+and for some devices, there may be more than one reasonable choice at to what
+constitutes the {\em data}.  However we find that for most devices we can
+readily define the data as the information that is of interest to clients
+and that changes (relatively) frequently.  For example, when interacting
+with a {\tt sonar} device, which controls an array of sonar tranducers,
+the data is simply a list of range readings.  For a {\tt laser} device,
+which controls a scanning laser range-finder, the data includes not only the
+range readings from the laser but also some current settings of the laser,
+such as scanning aperture and angular resolution.  We originally included
+only the range readings, but found that the auxillary configuration data is
+comparatively small and is in fact required in order to correctly interpret
+the range data.  In the same way,  the contents of a device's data will 
+in general represent a trade-off between information content and communication
+overhead.  Keep in mind that a device's data will usually be transmitted to 
+the client at 10Hz (or faster).
+
+\subsection*{Command}
+When a client {\tt write}s to a device, the client sends a new command to the
+device.  For a Player device, the term {\em command} is used to refer to the
+salient {\em controllable} state of the device.  That is, a device's command
+will generally include those parameters of the device that are most often
+changed in the course of using the device.  For example, when interacting
+with a {\tt position} device, which controls a mobile robot, the command
+is a set of translational and angular velocities.  Although many other aspects
+of the robot are user-configurable, most of the time one need only change
+the translational and angular velocities, as they determine the physical
+position of the robot, which is the main point of interest.  For a {\tt
+speech} device, which controls the a speech synthesizer, we chose to
+make the command the ASCII string that is to be synthesized; we believe that
+this choice presents a natural interface to the underlying synthesizer.  
+Again, command specification will be different for each device, and keep
+in mind that a device's command will usually be transmitted to the server
+at 10Hz (or faster).
+
+\subsection*{Configuration}
+All device interaction that does not qualify as data or command must be
+implemented as {\em configuration}.  Whereas data and command are asynchronous,
+one-way, (pseudo-)continuous streams, the Player configuration mechanism
+provides a synchronous, two-way, request-reply interaction between client and
+device.  When a client sends a configuration request to the server, the request
+is added to an incoming queue for the appropriate device.  At its leisure,
+the device will service the request, generate an appropriate reply and add
+it to the device's outgoing queue.  This reply will then be transmitted by
+the server to the waiting client.  Thus another distinction of configuration,
+as compared with data or command, is that configuration requests and replies
+are {\em not} overwritten and so are guaranteed to be received by the device
+and the client, respectively\footnote{This is mostly true, at least until the
+incoming and/or outgoing queues fill.  If the incoming queue fills, then the
+client will be notified by the server (see Section~\ref{sect:messageformat}).
+If the outgoing queue fills, then there is not really anthing to do; anyway
+this should not happen.}.
+
+In general, any kind of device interaction can be implemented as configuration,
+and a device can accept more than one kind of configuration request.  Usually,
+configuration is used to assign or query some aspect of the device's state.
+For example, when interacting with a {\tt fiducial} device, which finds
+special beacons in the environment, there are configuration requests that
+can be used to set parameters used in finding and identifying the beacons.
+Compared to data and command frequency, configurations are made relatively
+rarely; if for a particular device a particular configuration change is made
+very often, then the variables being configured should probably be part of
+the device's command.
+
+
+\section{Interfaces vs. Drivers}
+In order to support different kinds of hardware, Player makes a
+distinction between device {\em interfaces} and device {\em drivers}.
+A device interface, such as {\tt ptz}, specifies the format of the data,
+command, and configuration interactions that a device allows.  A device
+driver, such as {\tt sonyevid30}, specifies how the low-level device
+control will be carried out.  In general, more than one driver may support
+a given interface\footnote{Conversely, a given driver may support multiple
+interfaces; the {\tt amcl} and {\tt segwayrmp} drivers demonstrate this
+idea.}, though not all drivers will support all configuration requests.
+Thus we extend in Player the analogy of UNIX devices, where, for example,
+a wide variety of joysticks all present the same ``joystick'' API to
+the programmer.
+
+As an example, consider the two drivers {\tt p2os\_position} and {\tt
+rwi\_position}, which control Pioneer mobile robots and RWI mobile robots,
+respectively.  They both support the {\tt position} interface and thus
+they both accept commands and generate data in the same format, allowing
+a client program to treat them identically, ignoring the details of the
+underlying hardware.  They also accept configuration requests in the same
+format, but not all configuration requests are supported by both drivers.
+For example, motor power can be toggled from software with Pioneer robots
+but not with RWI robots.  Thus the {\tt p2os\_position} driver supports the
+configuration request to toggle motor power, while the {\tt rwi\_position}
+driver does not.
+
+All client/server interaction is done by interface, with no reference
+to the underlying driver\footnote{This is almost true, except that the driver
+name is passed back to the client when a device is opened, just in case the 
+client wants to do something driver-specific.}.  So, for example, if
+Player has been configured to control a single {\tt position} device with
+index 0 and driver {\tt p2os\_position} (see Chapter~\ref{chapt:configfile}
+for how specify this information), then the client opens and controls the
+$0^{th}$ {\tt position} device.  Player could also be configured to control
+a second {\tt position} device with index 1 and driver {\tt rwi\_position};
+to access it, the client would open the $1^{st}$ {\tt position} device.
+
+Details on Player's device interfaces and drivers are given in
+Chapters~\ref{chapt:interfaces}~\&~\ref{chapt:drivers}, respectively.
+
+\section{Supported Hardware \& Software}
+For a table of the currently supported hardware and software, check the
+FAQ:\\
+\indent \HOMEPAGE{\tt /faq.html}
+
+%-----------------------------------------------------------------------------
+\chapter{Configuration Files}
+\label{chapt:configfile}
+Player needs to know where and how your devices are connected/configured.
+For example, if you are controlling a SICK LMS laser, then Player needs
+to know to which serial port the laser is connected.  The configuration file
+is used to tell Player this information.  
+
+\noindent 
+By convention, configuraton files for Player have the extension {\tt .cfg}.
+Some example configuraton files are included in the distribution; they are
+installed in the subdirectory {\tt config}.
+
+\section{Basic Syntax}
+Player's configuration file syntax is very similar to that of Stage (in fact,
+they use the same parser and much of the following text is adapted from
+the Stage User Manual).  A simple configuration file might look like this:
+\begin{quote}
+\begin{verbatim}
+# The file configures Player to control a Pioneer 2-DX equipped 
+# with a gripper and a Sony pan-tilt-zoom camera.
+
+position:0 ( driver "p2os_position" )
+sonar:0 ( driver "p2os_sonar" )
+gripper:0 ( driver "p2os_gripper" )
+ptz:0 ( driver "sonyevid30" )
+
+\end{verbatim}
+\end{quote}
+This example shows the basic syntactic features of the 
+configuration file format: comments, devices, indices, and properties.
+
+Comments are indicated by the \verb'#' symbol; they may be placed
+anywhere in the file and continue to the end of the line.  For
+example:
+\begin{quote}
+\begin{verbatim}
+# This file configures Player for a Pioneer robot
+\end{verbatim}
+\end{quote}
+Devices are indicated using \verb+interface ( ... )+ entries; each such
+entry instantiates a device with interface \verb+interface+.  For example:
+\begin{quote}
+\begin{verbatim}
+position:0 ( ... )
+\end{verbatim}
+\end{quote}
+creates a device with a position interface (e.g., a mobile robot).  The
+list of available interfaces is given in Chapter~\ref{chapt:interfaces}.
+
+Player can concurrently control multiple devices with the same interface,
+and they are differentiated by indices.  When instantiating a device, its
+index is indicated with a colon and number syntax.  For example
+\begin{quote}
+\begin{verbatim}
+ptz:1 ( ... )
+\end{verbatim}
+\end{quote}
+creates a pan-tilt-zoom device that will be identified with index 1.  If the
+index is not specified, then an index of 0 is assumed.  Indices need not be
+consecutive, but for a given interface, they must be unique.  If multiple 
+devices are declared with the same interface and index, then the one that is
+declared last will replace the others.
+
+Devices have properties, indicated using \verb'name value' pairs:
+\begin{quote}
+\begin{verbatim}
+position:0 ( driver "p2os_position" port "/dev/ttyS0" )
+\end{verbatim}
+\end{quote}
+This entry creates a position device using the driver \verb+p2os_position+;
+that driver will control the underlying robot hardware via the serial port
+\verb+/dev/ttyS0+.  Property values can be either numbers (\verb'6665'),
+strings (indicated by double quotes \verb'"robot1"') or tuples (indicated
+by brackets \verb'[1 1 0]').
+
+There are two special properties, which can be supplied for any device:
+\begin{center}
+\begin{tabularx}{\columnwidth}{|l|l|c|X|}
+\hline
+Name & Type & Default & Meaning\\
+\hline
+{\tt driver} & string & varies & 
+Selects which driver will be loaded for this interface.  If no \verb+driver+
+is given for a device, then the default driver for the interface will be used.
+Default drivers for each interface are given in 
+Chapter~\ref{chapt:interfaces}.\\
+\hline
+{\tt alwayson} & integer & 0 & 
+Tells the server to subscribe to the device when the server starts up.
+You might use this to frontload startup time for drivers that take a while to
+start (e.g., {\tt acts}), to start a device that will never have any direct
+clients (e.g., a name service), or for testing a driver without the need to
+connect a client.\\
+\hline
+\end{tabularx}
+\end{center}
+The remaining driver-specific properties and their defaults are given in
+Chapter~\ref{chapt:drivers}.
+
+\section{Defining new device types}
+
+The \verb'define' statement can be used to define new types of devices.
+New devices are defined using the syntax:
+\begin{quote}
+\begin{verbatim}
+define newdevice olddevice (...)
+\end{verbatim}
+\end{quote}
+For example, the line:
+\begin{quote}
+\begin{verbatim}
+define pioneer2 position (driver "p2os_position" port "/dev/ttyS0")
+\end{verbatim}
+\end{quote}
+defines a new \verb'pioneer2' device type composed of the
+primitive \verb'position' device, appropriately configured for a Pioneer robot
+attached to the first serial port.  This device may be instantiated using the 
+standard syntax:
+\begin{quote}
+\begin{verbatim}
+pioneer2 ()
+\end{verbatim}
+\end{quote}
+
+\section{Using include files}
+
+The \verb'include' statement can be used to include device definitions
+(or declarations) from another file.  The definitions are included with the 
+following syntax:
+\begin{quote}
+\begin{verbatim}
+include "filename"
+\end{verbatim}
+\end{quote}
+
+\section{Units}
+
+The default units for length and angles are meters and degrees
+respectively.  Units may be changed using the following global
+properties:
+
+\begin{center}
+\begin{tabularx}{.9\textwidth}{|l|l|X|}
+\hline
+Name & Values & Description \\
+\hline
+\verb'unit_length' & \verb'"m"', \verb'"cm"', \verb'"mm"'
+& Set the unit length to meters, centimeters or millimeters. \\
+\hline
+\verb'unit_angle' & \verb'"degrees"', \verb'"radians"'
+& Set the unit angle to degrees or radians.\\
+\hline
+\end{tabularx}
+\end{center}
+
+\noindent
+Be warned that the length specfication applies to the include files as well,
+so choose a unit length early and stick to it.
+
+%-----------------------------------------------------------------------------
+\chapter{Client/Server Protocol}
+\label{chapt:socket}
+This section describes the TCP/IP socket interface to the Player server.
+Only device-independent information is given here.  For interface-specific
+payload formats, see Chapter~\ref{chapt:interfaces}.  For driver-specific
+information, see Chapter~\ref{chapt:drivers}.  For language-specific
+examples, consult the documentation for the appropriate client library.
+
+\section{A Note on Data Types}
+We are about to describe the protocol-level details of the socket
+interface to Player.  As such, it is worth making clear two details
+regarding data types.  First, the various messages that are sent
+between client and server are composed of fields of three different
+sizes, as listed in Table~\ref{table:datatypes}.  They may be signed
+or unsigned, but they will always be the same size.  
+
+\begin{table}[ht]
+\begin{center}
+{\small
+\begin{tabular}{|c|c|}
+\hline
+Type & size (in bytes) \\
+\hline
+{\bf byte/character} & 1 \\
+\hline
+{\bf short} & 2 \\
+\hline
+{\bf int} & 4 \\
+\hline
+\end{tabular}
+}
+\end{center}
+\caption{{\em Data types and their sizes}}
+\label{table:datatypes}
+\end{table}
+
+The second important detail is that all data on the network is in network
+byte-order (big-endian)\footnote{x86 machines are little-endian;
+thus clients running on them must byte-swap.}.  
+So, before sending a message to the
+server, the client must ensure that all multibyte fields 
+(i.e., {\bf short}s and {\bf int}s)
+are in network byte-order.  Analogously, before interpreting any messages
+from the server, the client must ensure that all multibyte fields
+are in the native byte-order.
+Single characters require no special processing.
+
+Most programming languages provide some method for converting from network 
+to native byte-order and back.  For example, in C you can use library functions
+like {\tt ntohs()} and {\tt htons()}.  On the other hand, Java handles
+byteswapping on data streams automatically, and Tcl offers a choice of
+byte-order when using the {\tt binary} command to marshal and demarshal binary
+strings.
+
+\section{A Note on Time}
+As explained below, Player messages often contain one or more time values,
+and it is important that the client be able to interpret them properly.
+Player measures time in the same way as many operating systems 
+({\tt struct timeval}).
+Each time value is represented as two {\bf int}s; one gives the number
+of seconds elapsed since the epoch (00:00:00 January 1, 1970) and the other
+gives the number of microseconds since the last second elapsed.
+Note that the time fields are only ever set by the server when sending
+a message to the client; the client should set them to zero when
+sending messages to the server.
+
+\section{Connecting to the Server}
+First a connection to Player needs to be established. This is done
+by creating a TCP socket and connecting to Player on port number\footnote{This 
+is the default port; Player can be configured to listen on 
+a different port through a command-line option at startup.  See 
+Table~\ref{table:commandlinefig}.} \DEFAULTPORT.  Immediately after connection,
+Player will respond with a 32-character NULL-terminated string that identifies
+its version; if the version string is less than 32 characters in length,
+NULL characters will be added to lengthen it.  When Player is interfacing to
+real devices, the string will be something like:
+\begin{verbatim}
+  Player v.1.2.3
+\end{verbatim}
+When Player is running under Stage, the string will be something like:
+\begin{verbatim}
+  Player v.1.2.3 (stage)
+\end{verbatim}
+The client must consume these 32 bytes; whether or not they are used in any
+way is up to the client.  After the version string, the server is waiting
+for direction from the client.
+
+\section{Message Formats}
+\label{sect:messageformat}
+Player clients and servers communicate with a simple symmetric message
+protocol.  Each message is composed of two parts: a header and a payload.
+We now describe the format of the header and of the payloads of
+the 4 different message types.
+
+\subsection{Header}
+Every Player message has a 32-byte header that contains information
+about how to interpret the payload of the message.  The header format
+is shown in Table~\ref{table:header}.
+
+\begin{table}[ht]
+\begin{center}
+{\small
+\begin{tabular}{lr}
+Byte 0 \hspace{.4\textwidth} & \hspace{.4\textwidth} Byte 31\\
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+{\tt STX} & {\tt type} & {\tt device} & {\tt index} & 
+{\tt t\_sec} & {\tt t\_usec} & {\tt ts\_sec} & {\tt ts\_usec} & 
+{\tt reserved} & {\tt size}\\
+\hline
+{\bf short} & {\bf short} & {\bf short} & {\bf short} & 
+{\bf int} & {\bf int} & {\bf int} & {\bf int} & {\bf int} & {\bf int} \\
+\hline
+\end{tabular}
+}
+\end{center}
+\caption{{\em Message header fields and types}}
+\label{table:header}
+\end{table}
+
+The fields in the header have the following meanings:
+\begin{itemize}
+\item {\tt STX} - This {\bf short} is a special symbol that signals the start
+of a message.  It always has the same value: {\tt 0x5878}.
+{\em Remember that this number, like all other {\bf short}s and
+{\bf int}s, is transmitted in network byte-order.}
+
+\item {\tt type} - This {\bf short} designates the type of the message to 
+follow.  There are 4 message types in the Player protocol. 
+Their type codes are given in Table~\ref{table:messagetypes} and they
+are described in detail in 
+Sections~\ref{sect:datamessages}--\ref{sect:error-responsemessages}.
+
+\begin{table}[ht]
+\begin{center}
+{\small
+\begin{tabular}{|l|l|}
+\hline
+{\bf Value} & {\bf Meaning} \\
+\hline
+{\tt 0x0001} & Data message\\
+\hline
+{\tt 0x0002} & Command message\\
+\hline
+{\tt 0x0003} & Request message\\
+\hline
+{\tt 0x0004} & Acknowledgement response message\\
+\hline
+{\tt 0x0005} & Synchronization message\\
+\hline
+{\tt 0x0006} & Negative acknowledgment response message\\
+\hline
+{\tt 0x0007} & Error response message\\
+\hline
+\end{tabular}
+}
+\end{center}
+\caption{{\em Message type codes}}
+\label{table:messagetypes}
+\end{table}
+
+\item {\tt device} - This {\bf short} designates the interface to which
+the message pertains.  The currently available interface types are given
+in Table~\ref{table:devicecodes}.  Descriptions of the interfaces can found
+in Chapter~\ref{chapt:interfaces}.
+
+\begin{table}[ht]
+\begin{center}
+{\small
+\begin{tabular}{|l|l|l|}
+\hline
+{\bf Value} & {\bf Interface} & {\bf Description} \\
+\hline
+{\tt 0x0001} & {\tt player} & The player server itself \\
+\hline
+{\tt 0x00FF} & {\tt null} & Null interface \\
+\hline
+{\tt 0x0002} & {\tt power} & Power subsytem \\
+\hline
+{\tt 0x0003} & {\tt gripper} & Simple robotic gripper \\
+\hline
+{\tt 0x0004} & {\tt position} & Mobile robot base \\
+\hline
+{\tt 0x0005} & {\tt sonar} & Array of fixed acoustic range-finders\\
+\hline
+{\tt 0x0006} & {\tt laser} & Single-origin scanning range-finder\\
+\hline
+{\tt 0x0007} & {\tt blobfinder} & Visual color segmentation system\\
+\hline
+{\tt 0x0008} & {\tt ptz} & Pan-tilt-zoom camera unit \\
+\hline
+{\tt 0x0009} & {\tt audio} & Fixed-tone generation and detection\\
+\hline
+{\tt 0x000A} & {\tt fiducial} & Fiducial (e.g., landmark) detector \\
+\hline
+{\tt 0x000B} & {\tt comms} & General-purpose communication system\\
+\hline
+{\tt 0x000C} & {\tt speech} & Speech synthesis/recognition system\\
+\hline
+{\tt 0x000D} & {\tt gps} & Global positioning system\\
+\hline
+{\tt 0x000E} & {\tt bumper} & Tactile bumper array\\
+\hline
+{\tt 0x000F} & {\tt truth} & Ground truth (only available in Stage) \\
+\hline
+{\tt 0x0010} & {\tt idarturret} & Collection of IDAR sensors\\
+\hline
+{\tt 0x0011} & {\tt idar} & IDAR (Infrared Data and Ranging) sensor\\
+\hline
+{\tt 0x0012} & {\tt descartes} & The Descartes mobile robot base\\
+\hline
+{\tt 0x0014} & {\tt dio} & Digitial I/O\\
+\hline
+{\tt 0x0015} & {\tt aio} & Analog I/O\\
+\hline
+{\tt 0x0016} & {\tt ir} & Array of fixed infrared range-finders \\
+\hline
+{\tt 0x0017} & {\tt wifi} & Wireless Ethernet card\\
+\hline
+{\tt 0x0018} & {\tt waveform} & Raw digital data (e.g., audio) \\
+\hline
+{\tt 0x0019} & {\tt localize} & Multi-hypothesis localization system\\
+\hline
+{\tt 0x001A} & {\tt mcom} & Inter-robot stack-based communication\\
+\hline
+{\tt 0x001B} & {\tt sound} & Play pre-recorded sound files\\
+\hline
+{\tt 0x001C} & {\tt audiodsp} & Fixed-tone generation and detection\\
+\hline
+{\tt 0x001D} & {\tt audiomixer} & Control sound levels\\
+\hline
+{\tt 0x001E} & {\tt position3d} & Robot base that moves in 3D\\
+\hline
+{\tt 0x001F} & {\tt simulation} & Interface for controlling simulator\\
+\hline
+{\tt 0x0020} & {\tt service\_adv} & Service discovery \\
+\hline
+{\tt 0x0021} & {\tt blinkenlight} & Blinking lights\\
+\hline
+{\tt 0x0022} & {\tt camera} & Camera images \\
+\hline
+\end{tabular}
+}
+\end{center}
+\caption{{\em Device interface type codes}}
+\label{table:devicecodes}
+\end{table}
+
+\item {\tt index} - This {\bf short} designates the particular device of type 
+{\tt device} to which the message pertains.  For example, if your robot
+is equipped with two laser range-finders, an index
+of {\tt 0x0000} addresses the first and an index of {\tt 0x0001} addresses
+the second.
+
+\item {\tt t\_sec} - {\em (Only set by server)} This {\bf int} is the 
+seconds portion of the server's current time.
+
+\item {\tt t\_usec} - {\em (Only set by server)} This {\bf int} is the 
+microseconds portion of the server's current time.
+
+\item {\tt ts\_sec} - {\em (Only set by server on data messages)} 
+This {\bf int} is the seconds portion of the timestamp supplied by the device
+from which the data originated.  It can be interpreted as the time at which
+the device ``sensed'' the phenomenom represented by the data.
+
+\item {\tt ts\_usec} - {\em (Only set by server on data messages)} 
+This {\bf int} is the microseconds portion of the timestamp supplied by the 
+device from which the data originated.  It can be interpreted as the time 
+at which the device ``sensed'' the phenomenom represented by the data.
+
+\item {\tt reserved} - This field is reserved for future use.
+
+\item {\tt size} - This {\bf int} is the size in bytes of the payload to
+follow (it does not include the size of the header).
+
+\end{itemize}
+
+\subsection{Data Messages}
+\label{sect:datamessages}
+When read access has been granted for a device, sensor data from that device it
+is sent to the client in a data message ({\tt type} {\tt 0x0001}). By default,
+the server continuously sends sensor data at 10Hz.  The {\tt device} and {\tt
+index} fields designate the device from which the data comes and the {\tt
+ts\_sec} and {\tt ts\_usec} fields give the time at which the device generated
+the data.  The {\tt t\_sec} and {\tt t\_usec} fields give the server's
+current time the payload contains the sensor data, the format of which is
+device-specific.  Data formats are given in Chapter~\ref{chapt:interfaces}.
+
+\subsection{Command Messages}
+\label{sect:commandmessages}
+When write permission has been granted for a device, the client can command
+the device by sending a command message ({\tt type} {\tt 0x0002}) to the
+server.  The {\tt device} and {\tt index} fields designate the device
+for which the command is intended.  The {\tt t\_sec}, {\tt t\_usec},
+{\tt ts\_sec}, and {\tt ts\_usec} fields are unused.  The payload
+contains the actuator command, the format of which is device-specific.
+In the interest of simplifying the protocol, the server does NOT respond
+to command messages.  Badly formatted commands and commands to devices for
+which write permission was never established will only cause errors to be
+printed on the console from which Player was launched.  Command formats are
+given in Chapter~\ref{chapt:interfaces}.
+
+\subsection{Request Messages}
+\label{sect:requestmessages}
+Request messages ({\tt type} {\tt 0x0003}) are sent by the client to the server
+to make configuration changes to devices.  Although stricly speaking the device
+need not be open in order for the client to configure it, the client should
+always open it first to ensure that the configuration change is actually made
+(the {\tt player} device is always ``open'').  The {\tt device} and {\tt
+index} fields designate the device for which the configuration is intended.
+The {\tt t\_sec}, {\tt t\_usec}, {\tt ts\_sec}, and {\tt ts\_usec} fields
+are unused.  The payload contains the configuration request, the format of
+which is device-specific.  The server will respond to each request message
+with an appropriate response message ({\tt type}\  {\tt 0x0004}, {\tt 0x0006},
+or {\tt 0x0007}).
+
+
+\subsection{Acknowledgement Response Messages}
+\label{sect:ack-responsemessages}
+Acknowledgement response messages ({\tt type} {\tt 0x0004}) are generated as
+a result of request messages ({\tt type} {\tt 0x0003}) that were successfully
+received, interpreted, and executed by a device.  Acknowledgement response
+messages are only sent by the server to the client.  The {\tt device} and {\tt
+index} fields designate the device for which the configuration is intended.
+The {\tt t\_sec} and {\tt t\_usec} fields give the server's current time;
+the {\tt ts\_sec} and {\tt ts\_usec} fields are time at which the device
+generated the reply.  The payload contains the response, the format of which
+is device-specific.
+
+\subsection{Synchronization Messages}
+\label{sect:synchmessage}
+After each round of data, the server sends a single synchronization message
+(type {\tt 0x0005}), with a zero-length body.  This message lets the client 
+know that all data for this cycle has been sent.  The synchronization message 
+is sent even when no data was sent, as can occur if the client is using one 
+of the data delivery modes that only send {\em new} data.
+
+\subsection{Negative Acknowledgement Response Messages}
+\label{sect:nack-responsemessages}
+Negative acknowledgement response messages ({\tt type} {\tt 0x0006})
+are generated as a result of request messages ({\tt type} {\tt 0x0003})
+that were successfully received by a device, but which could not be properly
+interpreted or executed.  Negative acknowledgement response messages are only
+sent by the server to the client.  The {\tt device} and {\tt index} fields
+designate the device for which the configuration is intended.  The {\tt t\_sec}
+and {\tt t\_usec} fields give the server's current time; the {\tt ts\_sec}
+and {\tt ts\_usec} fields are time at which the device generated the reply.
+The payload contains the response, the format of which is device-specific.
+
+\subsection{Error Acknowledgement Response Messages}
+\label{sect:error-responsemessages}
+Error acknowledgement response messages ({\tt type} {\tt 0x0007}) are
+generated as a result of request messages ({\tt type} {\tt 0x0003}) that
+could not be handed off to the target device, usually because the device's
+incoming configuration queue is full.  Error acknowledgement response messages
+are only sent by the server to the client.  The {\tt device} and {\tt index}
+fields designate the device for which the configuration is intended.  The {\tt
+t\_sec} and {\tt t\_usec} fields give the server's current time; the {\tt
+ts\_sec} and {\tt ts\_usec} fields are unused.  The payload will be empty.
+%-----------------------------------------------------------------------------
+\chapter{Device Interfaces}
+\label{chapt:interfaces}
+
+In this chapter, we define the various interface-specific payload formats.
+The Player protocol itself is described in Chapter~\ref{chapt:socket}.
+Although this section is generally up-to-date, the best place to look
+for the ``real'' message formats is in the header file 
+{\tt player.h}; that file defines the C {\tt struct}s that
+are manipulated by Player and the various device drivers.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% player
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/Player}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% null
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/null}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% aio
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/aio}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% audio
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/audio}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% audiodsp
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/audiodsp}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% audiomixer
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/audiomixer}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% blobfinder
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/blobfinder}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% bumper
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/bumper}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% comms
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/comms}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% camera
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/camera}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% dio
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/dio}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% fiducial
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/fiducial}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% gps
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/gps}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% gripper
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/gripper}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ir
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/ir}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% laser
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/laser}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% localization
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/localize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% mcom
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/mcom}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% motor
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/motor}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% position
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/position}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% position2d
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/position2d}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% position3d
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/position3d}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% power
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/power}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ptz
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/ptz}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% simulation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/simulation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sonar
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/sonar}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sound
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/sound}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% speech
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/speech}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% truth
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/truth}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% waveform
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/waveform}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% wifi
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newinterface
+\input{interfaces/wifi}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% bps
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newinterface
+%\input{interfaces/bps}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% idarturret
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newinterface
+%\input{interfaces/idarturret}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% idar
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newinterface
+%\input{interfaces/idar}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% descartes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newinterface
+%\input{interfaces/descartes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% mote
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newinterface
+%\input(interfaces/mote}
+
+
+%-----------------------------------------------------------------------------
+
+
+\chapter{Device Drivers}
+\label{chapt:drivers}
+In this chapter we describe the device drivers included in Player.
+For each driver, the supported interfaces, configuration requests, and
+configuration file options are given.  The syntax for specifying configuration
+file options is given in Chapter~\ref{chapt:configfile}.
+
+\newdriverex{acts}{\gerkey}
+\input{drivers/acts}
+
+\newdriverex{acoustics}{\nate}
+\input{drivers/acoustics}
+
+\newdriverex{amcl}{\ahoward,\boyoon}
+\input{drivers/amcl}
+
+\newdriverex{amtecpowercube}{\gerkey}
+\input{drivers/amtecpowercube}
+
+\newdriverex{cmucam2}{\pouya}
+\input{drivers/cmucam2}
+
+\newdriverex{cmvision}{\andy,\gerkey,\brendan,\ben}
+\input{drivers/cmvision}
+
+\newdriverexx{er1\_position}{er1_position}{\dfs}
+\input{drivers/er1}
+
+\newdriverex{festival}{\gerkey}
+\input{drivers/festival}
+
+\newdriverex{fixedtones}{\esben,\gerkey}
+\input{drivers/fixedtones}
+
+\newdriverex{flockofbirds}{\toby}
+\input{drivers/flockofbirds}
+
+\newdriverex{garminnmea}{\gerkey,\ahoward}
+\input{drivers/garminnmea}
+
+\input{drivers/gazebo}
+
+\newdriverex{khepera}{\toby}
+\input{drivers/khepera.tex}
+
+\newdriverex{lasercspace}{\ahoward}
+\input{drivers/lasercspace}
+
+\newdriverex{laserbar}{\ahoward}
+\input{drivers/laserbar}
+
+\newdriverex{laserbarcode}{\ahoward}
+\input{drivers/laserbarcode}
+
+\newdriverex{laservisualbarcode}{\ahoward}
+\input{drivers/laservisualbarcode}
+
+\newdriverex{lifo-mcom}{\brewer,\reed}
+\input{drivers/lifo_mcom}
+
+\newdriverex{linuxwifi}{\sweeney}
+\input{drivers/linuxwifi}
+
+\newdriverex{mixer}{\nate}
+\input{drivers/mixer}
+
+\newdriverex{nomad}{\vaughan,\pawel}
+\input{drivers/nomad}
+
+\newdriverex{p2os}{\gerkey,\kasper,\mckenna}
+\input{drivers/p2os_.tex}
+
+\newdriverex{passthrough}{\gerkey}
+\input{drivers/passthrough}
+
+\newdriverex{ptu46}{\toby}
+\input{drivers/ptu46.tex}
+
+\newdriverex{reb}{\sweeney}
+\input{drivers/reb_.tex}
+
+\newdriverex{rflex}{\brewer, \toby}
+\input{drivers/rflex.tex}
+
+\newdriverex{rwi}{\andy,\nik}
+\input{drivers/rwi_.tex}
+
+\newdriverex{readlog}{\ahoward}
+\input{drivers/readlog.tex}
+
+\newdriverex{segwayrmp}{\sweeney,\gerkey,\ahoward}
+\input{drivers/segwayrmp}
+
+\newdriverexx{service\_adv\_mdns}{service_adv_mdns}{\reed}
+\input{drivers/service_adv_mdns.tex}
+
+\newdriverexx{service\_adv\_lsd}{service_adv_lsd}{\reed}
+\input{drivers/service_adv.tex}
+
+\newdriverex{sicklms200}{\ahoward,\vaughan,\kasper}
+\input{drivers/sicklms200}
+
+\newdriverex{sickpls}{\yannick,\ahoward}
+\input{drivers/sickpls}
+
+\newdriverex{sonyevid30}{\gerkey}
+\input{drivers/sonyevid30}
+
+%\input{drivers/stageclient}
+
+\newdriverex{trogdor}{\gerkey}
+\input{drivers/trogdor}
+
+\newdriverex{udpbroadcast}{\ahoward,\gerkey}
+\input{drivers/udpbroadcast}
+
+\newdriverex{upcbarcode}{\ahoward}
+\input{drivers/upcbarcode}
+
+\newdriverex{vfh}{\cvjones}
+\input{drivers/vfh}
+
+\newdriverex{waveaudio}{\vaughan}
+\input{drivers/waveaudio}
+
+\newdriverex{wavefront}{\gerkey,\ahoward}
+\input{drivers/wavefront}
+
+\newdriverex{writelog}{\ahoward}
+\input{drivers/writelog.tex}
+
+
+%-----------------------------------------------------------------------------
+\chapter{Architecture}
+\label{chapt:architecture}
+Player was designed from the beginning to be easily extended by adding
+new devices and by adding new functionality to existing devices.  In fact,
+Player is really a general-purpose device server; we just happen to use
+it for controlling our robots.  You could use it to provide a simple, clean
+interface to any sensors or actuators you have.
+We describe in this chapter the overall system architecture and how
+you would go about adding your own devices.  After reading this chapter,
+you should consult the code for the existing devices as examples for
+writing your own.  Also, keep in mind that the code may change faster than 
+this document, so the details given here may not always be up to date.
+
+\section{Server Structure}
+Player is implemented in C++ and makes use of the POSIX-compliant
+pthread interface for writing multi-threaded programs.   Initially, Player
+was written with a very large number of threads (2 per client + 1 per device);
+we found this model to be rather inefficient (especially with LinuxThreads)
+and poorly scalable due to scheduler delay and context switch time.
+Thus we have eliminated many threads, keeping the total thread count
+constant in the number of clients.  To support code modularity and reusability
+there is still generally one thread per device, though some light-weight
+devices (e.g., the {\tt laserbeacon} device) do not require their own
+threads.
+
+One thread services all clients, doing the following: 
+listen for new client connections on the selected TCP port(s),
+read commands and requests from all current clients, 
+and write data and replies to all clients.
+
+When the server receives a request for a device that is not already setup,
+it calls the proper method, {\tt Setup()}, in the object which controls the
+indicated device.  The invocation of {\tt Setup()} involves spawning another
+thread to communicate with that device\footnote{Most, but not all devices
+have their own threads.}.  So, in total, we have 1 server thread and 1 thread
+per open device.
+
+The overall system structure of Player is shown in Figure~\ref{figure:buffers}.
+The center portion of the figure is Player itself; on the left are the physical
+devices and on the right are the clients.  As described above, each client
+has a TCP socket connection to Player. If the client is executing on the same
+host as Player, then this socket is simply a loopback connection; otherwise,
+there is a physical network in between the two.  At the other end, Player
+connects to each device by whatever method is appropriate for that device.
+For most devices, including the laser, camera, and robot microcontroller,
+Player makes this connection via an RS-232 serial line.  However, connections
+to the ACTS vision server and Festival speech synthesizer are via a TCP socket.
+
+Within Player, the various threads communicate through a shared global
+address space.  As indicated in Figure~\ref{figure:buffers}, each
+device has associated with it a command buffer and a data buffer.
+These buffers, which are each protected by mutual exclusion locks,
+provide an asynchronous communication channel between the device
+threads and the client reader and writer threads.  For example, when
+the client reader thread receives a new command for a device,
+it writes the command into the command buffer for that device.  At
+some later point in time, when the device thread is ready for a new
+command, it will read the command from its command buffer and send
+it on to the device.  Analogously, when a device thread receives
+new data from its device, it writes the data into its data
+buffer.  Later, when the client writer thread is ready to send new
+data from that device to a particular client, it reads the data from the data
+buffer and passes it on to the client.  In this way, the client
+service thread is decoupled from the device service threads (and
+thus the clients are decoupled from the devices).  Also, just by the
+nature of threads, the devices are decoupled from each other.
+
+\begin{figure}[t]
+ \centering
+ \epsfig{file=buffers.eps, width=0.900\textwidth}
+  \caption{{\em Overall system architecture of Player}}
+  \label{figure:buffers}
+\end{figure} 
+
+\subsection{Device data}
+By default, each client will receive new data from each device to which it is
+subscribed at 10Hz.  Of course, receiving data at 10Hz may not be reasonable
+for all clients; thus we provide a method for changing the frequency, and
+also for placing the server in a request/reply mode.  It is important to
+remember that even when a client receives data slowly, there is no backlog
+and it always receives the most current data; it has simply missed out on
+some intervening information.  Also, these frequency changes affect the
+server's behavior with respect to each client individually; the client at
+30Hz and the client at 5Hz can be connected simultaneously, and the server
+will feed each one data at its preferred rate.
+
+There are four (per-client) modes of data delivery, as follows:
+\begin{itemize}
+\item {\tt PLAYER\_DATAMODE\_PUSH\_ALL} : periodically send to the client
+current data from all devices currently opened for reading
+\item {\tt PLAYER\_DATAMODE\_PULL\_ALL} : on request from the client, send it
+current data from all devices currently opened for reading
+\item {\tt PLAYER\_DATAMODE\_PUSH\_NEW} : periodically send to the client
+current data only from those devices that are opened for reading and
+have generated new data since the last cycle
+\item {\tt PLAYER\_DATAMODE\_PULL\_NEW} : on request from the client, send it 
+current data only from those devices that are opened for reading and
+have generated new data since the last cycle
+\end{itemize}
+The default mode is currently {\tt PLAYER\_DATAMODE\_PUSH\_NEW}, which many
+clients will find most useful. In general, the {\tt *PUSH*} modes, which
+essentially provide continuous streams of data, are good when implementing
+simple (or multi-threaded) client programs in which the process will
+periodically block on the socket to wait for new data.  Likewise, the {\tt
+*PULL*} modes are good for client programs that are very slow and/or aperiodic.
+Along the other dimension, the {\tt *NEW*} modes are most efficient, as they
+never cause ``old'' data to be sent to the client.  However, if a client
+program does not cache sensor data locally, then it might prefer to use one
+of the {\tt *ALL*} modes in order to receive all sensor data on every cycle;
+in this way the client can operate each cycle on the sensor data in place
+as it is received.
+
+Of course, it is possible for a device to generate new data faster than
+the client is reading from the server.  In particular, there is no method
+by which a device can throw an interrupt to signal that it has data ready.
+Thus the data received by the client will always be slightly older for having
+sat inside the shared data buffer inside Player.  This ``buffer sit'' time
+can be minimized by increasing the frequency with which the server is sending
+data to the client\footnote{On Linux, due to the 10ms scheduler granularity,
+the effective upper limit on data rate is 50Hz.}.  In any case, all data
+is timestamped by the originating device driver, preferably as close to
+the time when the data was gathered from the device.  This data timestamp
+is generally a very close approximation to the time at which the sensed
+phenomenon occurred and can be used by client programs requiring (fairly)
+precise timing information.
+
+\subsection{Device commands}
+Analogous to the issue of data freshness is the fact that there is no guarantee
+that a command given by a client will ever be sent to the intended physical
+device.  Player does not implement any device locking, so when multiple
+clients are connected to a Player server, they can simultaneously write into
+a single device's command buffer.  There is no queuing of commands, and each
+new command will overwrite the old one; the service thread for the device
+will only send to the device itself whatever command it finds each time
+it reads its command buffer.  We chose not to implement locking in order
+to provide maximal power and flexibility to the client programs.  In our
+view, if multiple clients are concurrently controlling a single device,
+such as a robot's wheels, then those clients are probably cooperative,
+in which case they should implement their own arbitration mechanism at a
+higher level than Player.  If the clients are not cooperative, then the
+subject of research is presumably the interaction of competitive agents,
+in which case device locking would be a hindrance.
+
+\subsection{Device configurations}
+Whereas the data and command for each device are stored in simple buffers that
+are successively overwritten, configuration requests and replies are stored
+in queues.  Configuration requests, which are sent from client to server,
+are stored in the device's incoming queue.  Configuration replies, which
+are sent from server to client, are stored in the device's outgoing queue.
+These queues are fixed-size: queue element size is currently fixed at 1KB
+for all devices and queue length is determined at compile-time by each
+device's contructor.
+
+\section{Adding a new device driver}
+Having described the internal workings of Player, we now give a short
+tutorial on how you would go about extending the server by adding a new
+device driver.  As mentioned earlier, in lieu of a more complete prescription 
+for creating drivers, an examination of the code for the existing drivers 
+should provide you with sufficient examples.  You should be familiar with C++,
+class inheritance, and thread programming.
+
+The first step in adding a new driver to Player is to decide which
+interface(s) it will support.  The existing interfaces are described in
+Chapter~\ref{chapt:interfaces} and their various message structures and
+constants are defined in {\tt include/player.h}.  Although you can create a
+new interface, you should try to fit your driver to an existing interface,
+of which there are many.  By deciding to support an existing interface,
+you'll have less work to do in the server, and will likely have instant
+client support for your driver in several languages.
+
+To create a new driver, you should create a new class for the driver, which
+should inherit from {\tt CDevice}, declared in {\tt server/device.h} and
+implemented in {\tt server/device.cc}.  That base class defines a standard
+interface, part of which the new driver must implement (other parts it
+may choose to override).  We now describe the salient aspects of the {\tt
+CDevice} class.
+
+\subsection{Constructors}
+There are two {\tt CDevice} constructors available.  Most drivers will
+use the more expressive of the two:
+\begin{verbatim}
+    CDevice::CDevice(size_t datasize, size_t commandsize, 
+                     int reqqueuelen, int repqueuelen);}
+\end{verbatim}
+Arguments are:
+\begin{itemize}
+\item {\tt datasize} : the size (in bytes) of the buffer to be allocated to 
+hold the current data from the driver
+\item {\tt commandsize} : the size (in bytes) of the buffer to be allocated to 
+hold the current command for the driver
+\item {\tt reqqueuelen} : the length (in number of elements) of the queue 
+to be allocated to hold incoming configuration requests for the driver
+\item {\tt repqueuelen} : the length (in number of elements) of the queue to 
+be allocated to hold outgoing configuration replies from the driver
+\end{itemize}
+All requested buffers and queues will be allocated by the {\tt CDevice}
+constructor (we describe below where the pointers are stored in the object).
+This constructor should be  invoked in the preamble to the driver's own
+constructor; for example, the {\tt sicklms200} driver, which produces 
+fixed-length data, accepts no commands, and uses incoming and outgoing 
+configuration queues both of length 1, has a constructor that begins:
+\begin{verbatim}
+    CLaserDevice::CLaserDevice(int argc, char** argv) : 
+      CDevice(sizeof(player_laser_data_t),0,1,1)
+\end{verbatim}
+
+Now, you may want to allocte your own buffers and/or queues (e.g.,
+CStageDevice does its own memory management in static {\tt mmap()}ed
+segments).  If so, then your driver should not invoke a {\tt CDevice}
+constructor; the ``default'' zero-argument constructor will be invoked for you
+and will properly initialize some class members.  Even if you do allocate your
+own buffers, you might benefit from letting {\tt CDevice} know where they are,
+in that you could still use the standard {\tt CDevice} methods (described
+below) to interface with your driver.  You can do this by calling (usually in
+your own constructor) {\tt SetupBuffers()}:
+\begin{verbatim}
+    void CDevice::SetupBuffers(unsigned char* data, size_t datasize, 
+                               unsigned char* command, size_t commandsize, 
+                               unsigned char* reqqueue, int reqqueuelen, 
+                               unsigned char* repqueue, int repqueuelen);
+\end{verbatim}
+Arguments are:
+\begin{itemize}
+\item {\tt data} : the buffer allocated to hold the current data from the
+driver
+\item {\tt datasize} : the size (in bytes) of {\tt data}
+\item {\tt command} : the buffer allocated to hold the current command for the 
+driver
+\item {\tt commandsize} : the size (in bytes) of {\tt command}
+\item {\tt reqqueue} : the buffer allocated to hold incoming configuration
+requests; it should be an allocated as an array of {\tt playerqueue\_elt\_t}s
+\item {\tt reqqueuelen} : the length (in number of elements) of {\tt reqqueue}
+\item {\tt repqueue} : the buffer allocated to hold outgoing configuration
+replies; it should be an allocated as an array of {\tt playerqueue\_elt\_t}s
+\item {\tt repqueuelen} : the length (in number of elements) of {\tt repqueue}
+\end{itemize}
+In this case, {\tt SetupBuffers()} will allocate {\tt PlayerQueue} objects
+to handle configurations; they will operate on the memory segments that you 
+provide.
+
+Whether you let the {\tt CDevice} constructor allocate your buffers or do it
+yourself and then call {\tt SetupBuffers()}, the relevant pointers and sizes
+are stored in the following protected members of {\tt CDevice}:
+\begin{verbatim}
+    // buffers for data and command
+    unsigned char* device_data;
+    unsigned char* device_command;
+
+    // maximum sizes of data and command buffers
+    size_t device_datasize;
+    size_t device_commandsize;
+
+    // amount at last write into each respective buffer
+    size_t device_used_datasize;
+    size_t device_used_commandsize;
+    
+    // queues for incoming requests and outgoing replies
+    PlayerQueue* device_reqqueue;
+    PlayerQueue* device_repqueue;
+\end{verbatim}
+
+\subsection{Locking access to buffers}
+Because Player is a multi-threaded program, all access to shared buffers
+must be protected by mutual exclusion locks.  For this purpose, {\tt CDevice}
+contains a (private) {\tt pthread\_mutex\_t}, and provides (protected) {\tt
+Lock()} and {\tt Unlock()} methods that call {\tt pthread\_mutex\_lock()}
+and {\tt pthread\_mutex\_unlock()}, respectively (these methods are virtual;
+thus a driver can override them in order to use a different mutual exclusion
+mechanism).  You should surround all accesses to any of a driver's shared
+buffers or queues with calls to {\tt Lock()} and {\tt Unlock()}.  The default
+interface methods described in the following sections do exactly this.
+
+\subsection{Instantiation}
+\label{sect:instantiation}
+Because Player supports multiple indexed instances of devices, your driver
+should be prepared to be multiply instantiated (e.g., you generally
+should not use global or other static variables) and you must provide
+a function for instantiating it.  When a new instance of a driver is
+required, Player will call an appropriate instantiation function (see
+Section~\ref{sect:register-device} for how to register your instantiation
+method).  This function should return (as a {\tt CDevice*}) a pointer to a
+new instance of your device class.  Since an object has not yet been created
+when this function is called, it must be declared outside of the class
+(or static within the class).
+This function should match the following prototype:
+\begin{verbatim}
+  CDevice* Foo_Init(char* interface, ConfigFile* cf, int section);
+\end{verbatim}
+The arguments are:
+\begin{itemize}
+\item {\tt interface}: the string name of the interface that the driver has
+been requested to support
+\item {\tt cf}: a object containing information gleaned from the user's
+configuration file
+\item {\tt section}: in which section of the configuration file your driver 
+was requested
+\end{itemize}
+You should check the requested {\tt interface} to be sure that your driver can
+support it.  If you cannot, then return {\tt NULL}.  You should look in
+the configuration file object {\tt cf} for any options that may have been
+specified for you driver (look at existing drivers and {\tt
+server/configfile.h} for how to get options out).
+
+\subsection{Setup}
+When the first client subscribes to a device, the driver's {\tt Setup()}
+method is called.  This method is set to NULL in CDevice:
+\begin{verbatim}
+    virtual int CDevice::Setup() = 0;
+\end{verbatim}
+Thus every driver {\em must} implement this method.  After doing whatever is
+required to initialize the device (e.g., open a serial port and spawn a thread
+to interact with it), {\tt Setup()} should return either zero to indicate that
+the device was successfully setup, or non-zero to indicate that setup failed.
+Since clients may immediately request data and since they may never send 
+commands, a driver's data buffer and command buffer should be sensibly
+``zeroed'' in {\tt Setup()}.
+
+\subsection{Shutdown}
+When the last client unsubscribes from a device, the driver's 
+{\tt Shutdown()} method is called.  This method is set to NULL in CDevice:
+\begin{verbatim}
+    virtual int CDevice::Shutdown() = 0;
+\end{verbatim}
+Thus every driver {\em must} implement this method.  After doing whatever
+is required to stop the device (e.g., kill a thread and close a serial
+port), {\tt Shutdown()} should return either zero to indicate that device was
+successfully shutdown, or non-zero to indicate that shutdown failed.
+
+\subsection{Thread management}
+In order to leverage parallelism, most (but not all) devices use separate
+threads to do their work.  Because thread creation is not intuitively
+compatible with C++ object context, some support is provided in {\tt CDevice}
+for starting and stopping threads.  You are not required to use this support,
+but you might find it useful.
+
+The first step is to define in your class a public method {\tt Main()} that
+overrides the virtual declaration:
+\begin{verbatim}
+    virtual void CDevice::Main();
+\end{verbatim}
+Presumably your definition of {\tt Main()} will contain a loop that executes
+all device interaction.  When you want to start your thread (probably in {\tt
+Setup()}), call {\tt StartThread()}.  A new thread will be created;
+in that thread your driver's {\tt Main()} method will be invoked, with the
+proper context of your driver's object.  When you want to stop your thread
+(probably in {\tt Shutdown()}), call {\tt StopThread()}, which will cancel and
+join your thread; thus your thread should respond to cancellation requests
+(even if it initially defers them) and should be in a joinable state (i.e., it
+should {\em not} be detached).
+
+\subsection{Data access methods}
+{\em Most drivers can use the default {\tt CDevice} implementations of the
+following methods; however, they are virtual and can be overridden if
+necessary.}
+
+\subsubsection{PutData}
+Whenever your driver has new data, it should call {\tt PutData()}:
+\begin{verbatim}
+    virtual void CDevice::PutData(unsigned char* src, size_t len,
+                         uint32_t timestamp_sec, uint32_t timestamp_usec);
+\end{verbatim}
+Arguments are:
+\begin{itemize}
+\item {\tt src} : pointer to the new data
+\item {\tt len} : length (in bytes) of the new data
+\item {\tt timestamp\_sec} : the time at which the new data was produced
+\item {\tt timestamp\_usec} : the time at which the new data was produced
+\end{itemize}
+The default implementation of {\tt PutData()} will {\tt Lock()} access,
+{\tt memcpy()} your new data into {\tt device\_data}, save your {\tt len} and
+timestamp,  and {\tt Unlock()} access.  If {\tt ts} is {\tt NULL}, then
+{\tt PutData()} will use the current time (either system or simulator,
+as appropriate).
+
+\subsubsection{GetNumData}
+When a client wants to read data from your driver, the server will first
+call {\tt GetNumData()}:
+\begin{verbatim}
+    virtual size_t GetNumData(void* client);
+\end{verbatim}
+Arguments are:
+\begin{itemize}
+\item {\tt client} : a unique id for who wants the data
+\end{itemize}
+This method should return the number of data packets that are ready for the
+given client at this time.  The server will then call {\tt GetData()} that
+many times.  The default implementation of {\tt GetNumData()} simply returns
+1, which is almost always the right thing.  However, your driver can override
+this method if you want.
+
+\subsubsection{GetData}
+When a client wants to read data from your driver, the server will 
+invoke {\tt GetData()}:
+\begin{verbatim}
+    virtual size_t GetData(void* client, unsigned char* dest, size_t len,
+                        uint32_t* timestamp_sec, uint32_t* timestamp_usec);
+\end{verbatim}
+Arguments are:
+\begin{itemize}
+\item {\tt client} : a unique id for who wants the data
+\item {\tt dest} : pointer to a buffer into which to copy the data
+\item {\tt len} : length (in bytes) of {\tt dest}
+\item {\tt timestamp\_sec} : buffer into which to copy the time at which the data was 
+\item {\tt timestamp\_usec} : buffer into which to copy the time at which the data was 
+produced
+\end{itemize}
+The default implementation of {\tt GetData()} will {\tt Lock()} access, {\tt
+memcpy()} data from {\tt device\_data} into {\tt dest} (up to {\tt len}
+bytes), retrieve timestamp information, {\tt Unlock()} access, and return 
+how many bytes of data were copied.
+
+\subsection{Command access methods}
+{\em Most devices can use the default {\tt CDevice} implementations of the
+following methods; however, they are virtual and can be overridden if
+necessary.}
+
+\subsubsection{PutCommand}
+When a client sends a new command for your device, the server will
+invoke {\tt PutCommand()}:
+\begin{verbatim}
+    virtual void PutCommand(void* client, unsigned char* src, size_t len);
+\end{verbatim}
+Arguments are:
+\begin{itemize}
+\item {\tt client} : a unique id for the source of the command
+\item {\tt src} : pointer to the new command
+\item {\tt len} : length (in bytes) of the new command
+\end{itemize}
+The default implementation of {\tt PutCommand()} will {\tt Lock()} access,
+{\tt memcpy()} the new command into {\tt device\_command}, save {\tt len},
+and {\tt Unlock()} access.
+
+\subsubsection{GetCommand}
+When you want the current command for your device, you should call 
+{\tt GetCommand()}:
+\begin{verbatim}
+    virtual size_t CDevice::GetCommand(unsigned char* dest, size_t len);
+\end{verbatim}
+Arguments are:
+\begin{itemize}
+\item {\tt dest} : pointer to a buffer into which to copy the command
+\item {\tt len} : length (in bytes) of {\tt dest}
+\end{itemize}
+The default implementation of {\tt GetCommand()} will {\tt Lock()} access, 
+{\tt memcpy()} the command from {\tt device\_command} into {\tt dest} 
+(up to {\tt len} bytes), {\tt Unlock()} access, and return how many bytes of 
+command were copied.
+
+\subsection{Configuration access methods}
+{\em Most drivers can use the default {\tt CDevice} implementations of the
+following methods; however, they are virtual and can be overridden if
+necessary.}
+
+\subsubsection{PutConfig}
+When a new configuration request arrives for your device, the server will
+invoke {\tt PutConfig()}:
+\begin{verbatim}
+    virtual int CDevice::PutConfig(player_device_id_t* device, 
+                                   void* client, 
+                                   void* data,
+                                   size_t len);
+\end{verbatim}
+Arguments are:
+\begin{itemize}
+\item {\tt device} : an identifier that indicates the device for whom the
+request is intended
+\item {\tt client} : a tag that will be used to route the reply back to the
+right client (or other device)
+\item {\tt data} : buffer containing the new request
+\item {\tt len} : length (in bytes) of the new request
+\end{itemize}
+The default implementation of {\tt PutConfig} will {\tt Lock()} access, 
+push the request onto {\tt device\_reqqueue}, and {\tt Unlock()} access.  If
+all is well, then zero is returned; otherwise (e.g., if the queue is full)
+non-zero is returned and the server will send an error response message to the
+waiting client.
+
+\subsubsection{GetConfig}
+To check for new configuration requests in your device, you should call
+{\tt GetConfig()}:
+\begin{verbatim}
+    virtual size_t CDevice::GetConfig(player_device_id_t* device, 
+                                      void** client, 
+                                      void *data, 
+                                      size_t len);
+\end{verbatim}
+Arguments are:
+\begin{itemize}
+\item {\tt device} : an identifier that indicates the device for whom the
+request is intended (useful when one queue is used for multiple devices,
+as is the case with P2OS)
+\item {\tt client} : a place to store a tag that will be used to route the 
+reply back to the right client (or other device)
+\item {\tt data} : buffer into which to copy the new request
+\item {\tt len} : length (in bytes) of {\tt data}
+\end{itemize}
+For convenience, there is also a short form of {\tt GetConfig()}:
+\begin{verbatim}
+    virtual size_t CDevice::GetConfig(void** client,
+                                      void* data,
+                                      size_t len);
+\end{verbatim}
+The default implementation of {\tt GetConfig} will {\tt Lock()} access, 
+pop a request off {\tt device\_reqqueue}, and {\tt Unlock()} access.  If
+there was a request to be popped then the size of the request is returned;
+otherwise zero is returned, indicating that there are no pending requests.
+If there is request then hang onto {\tt client} because you will need to pass 
+it back in {\tt PutReply()}.
+
+\subsubsection{PutReply}
+After servicing a request, you must generate an appropriate reply; you do this
+by calling {\tt PutReply()}:
+\begin{verbatim}
+    virtual int CDevice::PutReply(player_device_id_t* device, 
+                                  void* client, 
+                                  unsigned short type, 
+                                  struct timeval* ts, 
+                                  void* data, 
+                                  size_t len);
+\end{verbatim}
+Arguments are:
+\begin{itemize}
+\item {\tt device} : an identifier that indicates from which the device the
+reply comes (useful when one queue is used for multiple devices,
+as is the case with P2OS)
+\item {\tt client} : the tag that you received in {\tt GetConfig}
+\item {\tt type} : the type of the reply (see below)
+\item {\tt ts} : pointer to time at which the configuration was executed
+\item {\tt data} : the reply itself (if any)
+\item {\tt len} : length (in bytes) of {\tt data}
+\end{itemize}
+There are also two short forms of {\tt PutReply()}:
+\begin{verbatim}
+    virtual int CDevice::PutReply(void* client, 
+                                  unsigned short type, 
+                                  struct timeval* ts, 
+                                  void* data, 
+                                  size_t len);
+
+    virtual int CDevice::PutReply(void* client, 
+                                  unsigned short type);
+\end{verbatim}
+The first short form assumes that the caller is the originator of the reply.
+The second short form further assumes that the reply is zero-length and
+that it should be stamped with the current time.
+
+The default implementation of {\tt PutReply} will {\tt Lock()} access,
+push the reply onto {\tt device\_repqueue}, and {\tt Unlock()} access.
+If the reply queue is full (which should not happen in practice) then -1
+is returned; otherwise a non-negative integer is returned.  The given {\tt
+type} will be used as the message type for the reply that will be sent to
+the client; it should be one of:
+\begin{itemize}
+\item {\tt PLAYER\_MSGTYPE\_RESP\_ACK} : the configuration was successful
+\item {\tt PLAYER\_MSGTYPE\_RESP\_NACK} : the configuration failed
+\end{itemize}
+If {\tt ts} is {\tt NULL}, then the current time is filled in.  Zero-length
+replies are valid (and frequent).
+
+\subsubsection{GetReply}
+The server will periodically check for replies from your device by calling
+{\tt GetReply()}:
+\begin{verbatim}
+    virtual int CDevice::GetReply(player_device_id_t* device, 
+                                  void* client, 
+                                  unsigned short* type, 
+                                  struct timeval* ts, 
+                                  void* data, 
+                                  size_t len);
+\end{verbatim}
+Arguments are:
+\begin{itemize}
+\item {\tt device} : an identifier indicating from which the device the reply
+has come
+\item {\tt client} : a tag to be matched 
+\item {\tt type} : place to copy the type of the reply
+\item {\tt ts} : place to copy the time at which the configuration was executed
+\item {\tt data} : buffer into which to copy the reply
+\item {\tt len} : length (in bytes) of {\tt data}
+\end{itemize}
+The default implementation of {\tt GetReply()} will {\tt Lock()} access,
+pop a reply off {\tt device\_repqueue}, {\tt Unlock()} access, and return the
+length of the reply.  Because zero-length replies are valid, {\tt GetReply()}
+will return -1 to indicate that no reply is available.
+
+\subsection{Registering your device}
+\label{sect:register-device}
+In order to inform the server about the availability of your driver,
+you must add it to {\tt driverTable}, a global table of drivers
+that may be instantiated.  You should add your driver by calling {\tt
+AddDevice()} in the function {\tt register\_devices()}, declared in {\tt
+server/deviceregistry.cc}:  
+\begin{verbatim}
+    int AddDriver(char* name, char access, 
+                  CDevice* (*initfunc)(char*,ConfigFile*,int));
+\end{verbatim}
+Arguments are:
+\begin{itemize}
+\item {\tt name} : the name of your driver
+\item {\tt access} : the allowable access mode for your driver; should be
+one of:
+\begin{itemize}
+\item {\tt PLAYER\_READ\_MODE}
+\item {\tt PLAYER\_WRITE\_MODE}
+\item {\tt PLAYER\_ALL\_MODE}
+\end{itemize}
+\item {\tt initfunc} : a function that can be used to create
+a new instance of your device (see Section~\ref{sect:instantiation})
+\end{itemize}
+You may find it convenient to write a registration function, e.g.:
+\begin{verbatim}
+  void SickLMS200_Register(DriverTable* table)
+  {
+    table->AddDriver("sicklms200", PLAYER_READ_MODE, SickLMS200_Init);
+  }
+\end{verbatim}
+You should also {\tt \#include} your device's class header in {\tt
+deviceregistry.cc}.   To encourage modularity of the server by allowing
+drivers to be left out at compile-time, it is customary to make both the
+{\tt \#include} and  {\tt AddDriver()} conditioned on compiler directives.
+For example:
+\begin{verbatim}
+    #ifdef INCLUDE_SICK
+    void SickLMS200_Register(DriverTable* table);
+    #endif
+
+    ...
+
+
+    void
+    register_devices()
+    {
+      ...
+
+      #ifdef INCLUDE_SICK
+        SickLMS200_Register(driverTable);
+      #endif
+
+      ...
+    }
+\end{verbatim}
+
+\subsection{Compiling your device}
+\label{sect:compilation}
+Finally, you need to compile your device and link it into the server binary.
+You really need to know something about GNU Autotools to do this.  As such,
+look at how the existing drivers are linked in.
+
+
+\subsection{Building a shared library}
+\label{sect:shared-lib}
+As an alternative to statically linking your device driver directly into the
+Player binary, you can build your driver as a shared object and have Player
+load it at run-time.  If you choose to take this path, then you should still
+follow most of the directions given in the previous sections, except for the
+registration and compilation details in 
+Sections~\ref{sect:register-device}--\ref{sect:compilation}.
+
+Instead of registering your device in {\tt deviceregistry.cc}, you should
+do so in an initialization function that will be invoked by the loader.
+You must declare this initialization function, as well as a finalization
+function, in your driver code.  For example, in order to build the {\tt
+sicklms200} driver as a shared object, the following code is added 
+to {\tt sicklms200.cc}:
+\begin{verbatim}
+    #include <drivertable.h>
+    extern DriverTable* driverTable;
+    
+    /* need the extern to avoid C++ name-mangling  */
+    extern "C" {
+    void _init(void)
+    {
+      driverTable->AddDriver("sicklms200", PLAYER_READ_MODE, SickLMS200_Init);
+    }
+    
+    void _fini(void)
+    {
+      /* probably don't need any code here; the destructor for the device
+       * will be called when Player shuts down.  this function is only useful
+       * if you want to dlclose() the shared object before Player exits
+       */
+    }
+    }
+\end{verbatim}
+The {\tt \_init()} function will be invoked by the loader when Player
+calls {\tt dlopen()} to load your driver.  The {\tt \_fini()} function
+will be invoked when the library is {\tt dlclose()}ed; however, Player never
+closes your library explicitly, so {\tt \_fini()} will be called when Player
+exits.
+
+The details of building a shared object vary from system to system, but the
+following example, which works with g++ on Linux, should get you started:
+\begin{verbatim}
+    $ g++ -Wall -DPLAYER_LINUX -g3 -I$PLAYER_DIR/server -c sicklms200.cc
+    $ g++ -shared -nostartfiles -o sicklms200.so sicklms200.o
+\end{verbatim}
+Having built your driver library, tell Player on the command-line to load it
+(as described in Section~\ref{sect:commandline}), e.g.:
+\begin{verbatim}
+    $ player -d sicklms200.so
+\end{verbatim}
+
+Note that the dynamic loading functionality is still somewhat experimental,
+and is not currently used by any core Player drivers.  However, it should
+work.  If you use shared libraries, please let us know about your experiences.
+
+
+\bibliographystyle{plain}
+\bibliography{player}
+
+\appendix
+%-----------------------------------------------------------------------------
+\chapter{The C Client Interface}
+\label{app:c}
+Included with Player is a simple, no-frills client interface library
+written in ANSI C ({\tt client\_libs/c}).  This client is 
+intentionally primitive and most users
+will find it inconvenient for writing anything more that the simplest
+control program.  Rather than direct use, the C client should be considered
+the reference implementation of a Player client library and should be
+consulted for networking details when writing new clients in other 
+languages (the C client can also be used directly as a low-level substrate 
+for other clients; the C++ client is implemented in this way).
+In the file {\tt playercclient.c} are defined the 5
+device-neutral functions necessary in any client:
+\begin{itemize}
+\item {\tt player\_connect()} : connect to the server
+\item {\tt player\_disconnect()} : disconnect from the server
+\item {\tt player\_read()} : read one data packet from the server
+\item {\tt player\_write()} : write one command packet to the server
+\item {\tt player\_request()} : send a request packet and wait for the reply
+\end{itemize}
+In addition, the {\em very} useful helper function 
+{\tt player\_request\_device\_access()} (a special case of 
+{\tt player\_request()} that obtains access to devices) is defined.
+
+In the files {\tt print.c} and {\tt helpers.c} are defined some
+device-specific functions that simplify direct use of the C client; we do
+not document them here.
+
+\section{Debug Information}
+Before getting to the core functions of the C client, we note that they
+can each generate some debug information to {\tt stderr}.  This 
+information is generally helpful, especially in diagnosing problems; you 
+should probably not disable it.  However, a function is provided for 
+adjusting the amount of debug information that is printed:
+
+{\small
+\begin{verbatim}
+  /*
+   * use this to turn off debug ouput.
+   *
+   * higher numbers are more output, 0 is none.
+   *
+   * incidentally, if <level> is -1, it returns the current level and
+   * the current level is unchanged
+   */
+  int player_debug_level(int level);
+\end{verbatim}}
+
+The default debug level is 5, which prints all messages.  This
+same function is used to vary the debug output from the C++ client, since
+it is built on top of the C client.
+
+
+\section{Connecting to the Server}
+The C client makes no use of static data structures for maintaining connection
+information; rather the user must always supply a pointer to a properly
+initialized connection structure, of type {\tt player\_connection\_t}.
+This structure is initialized by {\tt player\_connect()}:
+
+{\small
+\begin{verbatim}
+  /*
+   * connects to server listening at host:port.  conn is filled in with
+   * relevant information, and is used in subsequent player function
+   * calls
+   *
+   * Returns:
+   *    0 if everything is OK (connection opened)
+   *   -1 if something went wrong (connection NOT opened)
+   */
+  int player_connect(player_connection_t* conn, const char* host, int port);
+\end{verbatim}
+}
+
+Note that the connection will be blocking.  A simple example:
+
+{\small
+\begin{verbatim}
+  ...
+  player_connection_t conn;
+
+  /* Connect to Player server */
+  if(player_connect(&conn, "localhost", PLAYER_PORTNUM))
+    exit(1);
+  ...
+\end{verbatim}
+}
+
+\section{Requesting Device Access}
+To ease the common process of requesting read and write access to devices,
+the C client includes the function {\tt player\_request\_device\_access()}:
+
+{\small
+\begin{verbatim}
+  ...
+  /*
+   * issue a single device request (special case of player_request())
+   *
+   * 
+   * if grant_access is non-NULL, then the actual granted access will
+   * be written there.
+   *
+   *   Returns:
+   *      0 if everything went OK
+   *     -1 if something went wrong (you should probably close the
+   *     connection!)
+   */
+  int player_request_device_access(player_connection_t* conn,
+                                   uint16_t device,
+                                   uint16_t device_index,
+                                   uint8_t req_access,
+                                   uint8_t* grant_access);
+\end{verbatim}
+}
+
+
+The following  code fragment obtains 'all' ({\tt 'a'}) access to the 
+{\tt ptz} device.
+
+{\small
+\begin{verbatim}
+  ...
+  /* Request 'all' access to the ptz device */
+  if(player_request_device_access(&conn, PLAYER_PTZ_CODE, 0, 'a',NULL) == -1)
+    exit(1);
+  ...
+\end{verbatim}
+}
+
+\section{Reading Data}
+For obtaining data from devices, the C client provides the rather simple 
+function {\tt player\_read()}:
+
+{\small
+\begin{verbatim}
+  /*
+   * read from the indicated connection.  put the data in buffer, up to
+   * bufferlen.
+   *
+   * Returns:
+   *    0 if everything went OK
+   *   -1 if something went wrong (you should probably close the connection!)
+   */
+  int player_read(player_connection_t* conn, player_msghdr_t* hdr,
+                  char* payload, size_t payloadlen);
+\end{verbatim}
+}
+
+This function will read one data packet from the server, blocking 
+if no packet is available.  It is the caller's responsibility to 
+provide sufficient storage for the header and payload, and
+{\tt player\_read()} will not overrun the provided buffers.  After
+calling {\tt player\_read()}, the user will presumably examine the fields
+of the header in order to know how to process the payload.  Note that 
+{\tt player\_read()} will appropriately byte-swap all fields in the header,
+but will not transform the contents of the payload in any way.  A simple
+example:
+
+{\small
+\begin{verbatim}
+  ...
+  player_msghdr_t hdr;
+  char data[PLAYER_MAX_MESSAGE_SIZE];
+
+  if(player_read(&conn, &hdr, data, sizeof(data)) == -1)
+    exit(1);
+  ...
+\end{verbatim}
+}
+
+\section{Writing Commands}
+For writing commands to devices, the C client provides the function
+{\tt player\_write()}:
+
+{\small
+\begin{verbatim}
+  /*
+   * write commands to the indicated connection. writes the data contained
+   * in command, up to commandlen.
+   *
+   * Returns:
+   *    0 if everything goes OK
+   *   -1 if something went wrong (you should probably close the connection!)
+   */
+  int player_write(player_connection_t* conn, 
+                   uint16_t device, uint16_t device_index,
+                   const char* command, size_t commandlen);
+\end{verbatim}
+}
+
+This function will build the appropriate message header, including
+appropriate byte-swapping of the fields.  The first {\tt commandlen}
+bytes of {\tt command} will be copied in as the payload of a messge that
+will be sent to the server.  Note that the caller must byte-swap
+the contents of the command itself.  A simple example that tells the
+0th {\tt position} device to spin in place:
+
+{\small
+\begin{verbatim}
+  ...
+  player_position_cmd_t cmd;
+  cmd.speed = htons(0);
+  cmd.turnrate = htons(40);
+  if(player_write(&conn, PLAYER_POSITION_CODE, 0, (char*)&cmd, 
+                  sizeof(player_position_cmd_t)) == -1)
+    exit(1);
+  ...
+\end{verbatim}
+}
+
+\section{Requesting Configuration Changes}
+For requesting configuration changes to devices, the C client provides
+the function {\tt player\_request()}:
+
+{\small
+\begin{verbatim}
+  /*
+   * issue some request to the server. requestlen is the length of the 
+   * request.  reply, if non-NULL, will be used to hold the reply; replylen
+   * is the size of the buffer (player_request() will not overrun your buffer)
+   *
+   *   Returns:
+   *      0 if everything went OK
+   *     -1 if something went wrong (you should probably close the connection!)
+   */
+  int player_request(player_connection_t* conn, 
+                     uint16_t device, uint16_t device_index, 
+                     const char* payload, size_t payloadlen, 
+                     player_msghdr_t* replyhdr, char* reply, size_t replylen);
+  
+\end{verbatim}
+}
+
+This function will build the proper message header, including appropriately
+byte-swapping the header fields.  The caller is responsible for byte-swapping
+the contents of the {\tt payload}, which will be copied in as the payload
+of a message that will be sent to the server.  After sending the request,
+{\tt player\_request()} will wait for the matching reply (consuming and
+discarding all intervening messages) before returning.
+If the caller wants to examine the reply, then appropriate buffers should
+be supplied as {\tt replyhdr} and {\tt reply}.
+
+\section{Disconnecting from the Server}
+To disconnect from the server, use the function {\tt player\_disconnect()}:
+
+{\small
+\begin{verbatim}
+  /*
+   * close a connection. conn should be a value that was previously returned
+   * by a call to player_connect()
+   *
+   * Returns:
+   *    0 if everything is OK (connection closed)
+   *   -1 if something went wrong (connection not closed)
+   */
+  int player_disconnect(player_connection_t* conn);
+\end{verbatim}
+}
+
+
+\end{document}
+
+
+% AH -- I stuck this here rather than deleting it, just in case
+% we decide that we dont like the in-code documentation.
+
+\chapter{The C++ Interface}
+\label{app:c++}
+The C++ client ({\tt client\_libs/c++}) is generally the 
+most comprehensive library, since it
+is used to test new features as they are implemented in the server.
+It is also the most widely used client library and thus the best 
+debugged.  Having said that, this client is not perfect, but should
+be straightforward to use by anyone familiar with C++.
+
+The C++ library is built on a "service proxy" model in which the client
+maintains local objects that are proxies for remote services.  There are
+two kinds of proxies: the special server proxy {\tt PlayerClient} and the
+various device-specific proxies.  Each kind of proxy is implemented as
+a separate class.  The user first creates a {\tt PlayerClient} proxy and 
+uses it to establish a connection to a Player server.  Next, the proxies
+of the appropriate device-specific types are created and initialized
+using the existing {\tt PlayerClient} proxy.
+To make this process concrete, consider the following simple example 
+(for clarity, we omit some error-checking):
+
+{\small
+\begin{verbatim}
+  int main(int argc, char **argv)
+  { 
+    /* Connect to Player server on "localhost" at default port */
+    PlayerClient robot("localhost");
+    /* Request access to the ptz camera */
+    PtzProxy zp(&robot,0,'a');
+
+    int dir = 1;
+    for(;;)
+    {
+      if(robot.Read())
+        exit(1);
+  
+      // print out current camera state
+      zp.Print();
+  
+      if(zp.pan > 80 || zp.pan < -80)
+        dir = -dir;
+  
+      zp.SetCam(zp.pan + dir * 5,zp.tilt,zp.zoom);
+    }
+
+    // won't actually get here, but...
+    robot.Disconnect();
+  }
+\end{verbatim}
+}
+
+This program will continuously pan the pan-tilt-zoom camera unit left and
+right\footnote{Well, not exactly.  A little extra code is required to handle
+the physical camera because it pans rather slowly; see 
+{\tt examples/c++/ptz.cc} for the details.}.  First, a {\tt PlayerClient}
+proxy is created, using the default constructor to connect to the
+server listening at {\tt localhost:\DEFAULTPORT}.  Next, a {\tt PtzProxy} is 
+created to control the camera.  The constructor
+for this object uses the existing {\tt PlayerClient} proxy to establish
+"all" ({\tt 'a'}) access to the 0th pan-tilt-zoom camera.  Finally, we enter
+a simple loop that reads the current camera state and writes back a new 
+state with the pan angle changed slightly.
+
+With that simple example in mind, we now describe the full functionality of 
+the C++ client library; first the {\tt PlayerClient} class then the 
+individual device proxy classes.
+
+\section{The {\tt PlayerClient} Class}
+One {\tt PlayerClient} object is used to control each connection to a Player
+server.  Contained within this object are methods for changing the connection 
+parameters and obtaining access to devices, which we explain next.
+
+\subsection{Constructors}
+The {\tt PlayerClient} class has three different constructors:
+\begin{itemize}
+\item {\tt PlayerClient()} : Create a {\tt PlayerClient} proxy but do not 
+                                  to a server.
+\item {\tt PlayerClient(char* hostname)} : Create a {\tt PlayerClient} proxy 
+and (if {\tt hostname} is non-NULL) connect it to a server listening at
+{\tt hostname}:\DEFAULTPORT.
+\item {\tt PlayerClient(char* hostname,int port)} : Create a 
+{\tt PlayerClient} proxy and (if {\tt hostname} is non-NULL) connect it to 
+a server listening at {\tt hostname}:{\tt port}.
+\end{itemize}
+Note that the second and third forms will attempt to make a connection, which
+may fail for any number of reasons.  The constructor cannot indicate the 
+success or failure of the connection, so to be sure you should either: use
+the form and then call {\tt Connect()} yourself or use the second or third
+form and then call {\tt Connected()} to verify that you are indeed 
+connected (see below for information on both methods).
+
+\subsection{Connecting to the Server}
+If you have a {\tt PlayerClient} proxy that is not currently connected to
+a server, you can connect it with any of the three forms of the method
+{\tt Connect()}:
+\begin{itemize}
+\item {\tt int Connect()} : Connect to the server listening at
+{\tt localhost}:\DEFAULTPORT.
+\item {\tt int Connect(char* hostname)} : Connect to the server
+listening at {\tt hostname}:\DEFAULTPORT.
+\item {\tt int Connect(char* hostname, int port)} : Connect to the server
+listening at {\tt hostname}:{\tt port}.
+\end{itemize}
+
+These methods return 0 if the connection succeeded. If something
+went wrong, then -1 is returned, the connection is {\em not} established,
+and a diagnostic error is printed to {\tt stderr}.
+
+\subsection{Disconnecting from the Server}
+If you have a {\tt PlayerClient} proxy that is currently connected to
+a server, you can disconnect it with the method:
+
+{\tt int Disconnect()}
+
+\noindent If the disconnection succeeded 0 is returned.  
+Otherwise -1 is returned (the connection was probably already closed).
+
+\subsection{Verifying Connection}
+In order to check whether or not your {\tt PlayerClient} proxy is currently
+connected, use the method:
+
+{\tt bool Connected()}
+
+\subsection{Reading Data}
+After your {\tt PlayerClient} proxy is connected and you have requested
+some devices (see below), you can read data with the method:
+
+{\tt int Read()}
+
+\noindent This method will read one round of data; that is, it will read
+one data packet for each device that is currently open for reading.  The
+data from each device will be processed by the appropriate device proxy
+and stored there for access by your program.  If no errors occurred 0
+is returned.  Otherwise, -1 is returned and diagnostic information is printed
+to {\tt stderr} (you should probably close the connection!).
+
+\subsection{Changing Data Delivery Frequency}
+You can change the rate at which your client receives data from the 
+server with the method:
+
+{\tt int SetFrequency(unsigned short freq)}
+
+\noindent The value of {\tt freq} is interpreted as Hz; this will be the
+new rate at which your client receives data (when in continuous mode).
+On error, -1 is returned; otherwise 0.
+
+\subsection{Changing Data Delivery Mode}
+You can toggle the mode in which the server sends data to your client with
+the method:
+
+{\tt int SetDataMode(unsigned char mode)}
+
+\noindent The {\tt mode} should be either 1 (for request/reply) or 0 (for
+continuous).  On error, -1 is returned; otherwise 0.
+
+\subsection{Requesting Data}
+When in request/reply mode, you can request a single round of data using
+the method:
+
+{\tt int RequestData()}
+
+\noindent On error -1 is returned; otherwise 0.
+
+\section{The Device Proxy Classes}
+Access to a device is provided by a device-specific proxy class.  These
+classes all inherit from the {\tt ClientProxy} class which defines an
+interface for device proxies.  As such, a few methods are common to all
+devices and we explain them here.
+
+The constructors for the various proxies all take the same forms:
+\begin{itemize}
+\item {\tt DeviceProxy(PlayerClient* pc, unsigned short index)} : Create
+    device proxy but do not request access to the device.
+\item {\tt DeviceProxy(PlayerClient* pc, unsigned short index, 
+    unsigned char access)} : Create device proxy and request {\tt access}
+    access to it (should be {\tt r}, {\tt w}, or {\tt a}).
+\end{itemize}
+The pointer {\tt pc} must refer to an already connected 
+{\tt PlayerClient} proxy.  The {\tt index} indicates which one of the
+devices to use (usually 0).  Note that the request executed by the second
+form of the constructor can fail, but the constructor cannot indicate the
+failure.  Thus, if you use the second form, you should verify that the
+current access is identical to your requested access using the method:
+
+{\tt unsigned char GetAccess()}
+
+\noindent  An access of {\tt e} indicates that some device-related error 
+occurred (e.g., the device could not be initialized due to a hardware problem).
+
+If you use the first form of the constructor to create a device proxy with 
+no access, you can request access using the method {\tt ChangeAccess()}, 
+which takes two forms:
+\begin{itemize}
+\item {\tt int ChangeAccess(unsigned char req\_access)}
+\item {\tt int ChangeAccess(unsigned char req\_access, unsigned char* 
+        grant\_access)}
+\end{itemize}
+In the second case, the actual granted access is returned in 
+{\tt grant\_access}.  In either case, 0 is returned if all went well
+and -1 is returned if a low-level (i.e., not device-related) error 
+occurred.  In addition to requesting initial device access, this method
+can be used at any time to request a change of access to a device.
+
+Most device proxy classes also provide a method for printing out their
+current state:
+
+{\tt void Print()}
+
+\noindent  This method prints to {\tt stdout} device-specific data
+in a format that (hopefully) lends itself to automatic processing and
+plotting.
+
+We now describe the various device proxy classes.
+
+\subsection{The {\tt PositionProxy} Class}
+This {\tt PositionProxy} class is used to control the {\tt position} device.
+This class contains the following public fields, which hold the most recently
+read data:
+\begin{itemize}
+\item {\tt int xpos,ypos;} : odometric position (mm)
+\item {\tt unsigned short theta;} : odometric orientation (degrees)
+\item {\tt short speed, turnrate;} : actual translational and angular
+                                     velocities (mm/s and degrees/s)
+\item {\tt unsigned short compass;} : compass heading (degrees)
+\item {\tt unsigned char stalls;} : whether or not the motors 
+                                    are stalled (boolean)
+\end{itemize}
+
+\noindent To send a new motor command, use the method:
+
+{\tt int SetSpeed(short speed, short turnrate)}
+
+\noindent On error, -1 is returned; otherwise 0.
+
+To enable or disable the motors from 
+software\footnote{Be {\bf VERY} careful
+with the method!  Your robot is likely to run across the room with the
+charger still attached.}, use the method:
+
+{\tt int SetMotorState(unsigned char state)}
+
+\noindent If {\tt state} is 0 then the motors are disabled and otherwise
+they are enabled.  On error -1 is returned; otherwise 0.
+
+To change the velocity control mode use the method:
+
+{\tt int SelectVelocityControl(unsigned char mode)}
+
+\noindent If {\tt mode} is 0 then direct wheel velocity control is used;
+otherwise separate translational and rotational control is
+used\footnote{This mode has no effect on the external command interface 
+to the {\tt position} device; it only affects the responsiveness and jerk
+of the robot.}.  On error 0 is returned; otherwise 0.
+
+To reset the robot's odometry to (0,0,0) use the method:
+
+{\tt ResetOdometry()}
+
+\noindent On error -1 is returned; otherwise 0.
+
+\subsection{The {\tt SonarProxy} class}
+This class is used to control the {\tt sonar} device.  It contains the
+most recent sonar range data, which can be accessed in two ways:
+\begin{itemize}
+\item The public field {\tt ranges}, which is an array of 
+     size {\tt PLAYER\_NUM\_SONAR\_SAMPLES} and
+     type {\tt unsigned short}. 
+\item The operator {\tt []}, which indexes into the {\tt ranges} array.
+\end{itemize}
+For example, given a {\tt SonarProxy} named {\tt sp}, the following 
+expressions are equivalent:
+
+{\tt sp.ranges[0]}\\
+\indent {\tt sp[0]}
+
+This class contains one method, used to enable/disable the sonars:
+
+{\tt int SetSonarState(unsigned char state)}
+
+\noindent If {\tt state} is 0 then the sonar are disabled; otherwise they
+are enabled\footnote{While the sonars are disabled the client will still
+receive sonar data but the ranges will always be the values last read
+from the sonars before they were disabled.}.  On error -1 is returned;
+otherwise 0.
+
+\subsection{The {\tt MiscProxy} Class}
+This class is used to control the {\tt misc} device and contains just
+3 fields:
+\begin{itemize} 
+\item {\tt unsigned char frontbumpers,rearbumpers;} : The states
+of the front and rear bumper arrays.  The lower 5 bits of each represent the
+states of the 5 individual bumper panels (0 is not pressed; 1 is pressed)
+\item {\tt unsigned char voltage;} : The current battery voltage (decivolts)
+\end{itemize}
+
+\subsection{The {\tt PtzProxy} Class}
+This class is used to control the {\tt ptz} device.  It contains 3 public
+fields, which reflect the most recently read state of the camera:
+\begin{itemize}
+\item {\tt short pan,tilt;} : Pan and tilt (degrees)
+\item {\tt unsigned short zoom;} : Zoom (0 is wide; 1024 max telefoto)
+\end{itemize}
+
+To command a new (absolute) camera position, use the method:
+
+{\tt int SetCam(short pan, short tilt, unsigned short zoom)}
+
+\noindent On error -1 is returned; otherwise 0.
+
+\subsection{The {\tt VisionProxy} Class}
+This class is used to control the {\tt vision} device.  It contains
+no methods.  The current color blob data is stored in a dynamically
+allocated 2-D array, indexed by color channel:
+
+{\tt Blob* blobs[ACTS\_NUM\_CHANNELS];}
+
+\noindent Each {\tt Blob} structure contains the following information:
+\begin{verbatim}
+  unsigned int area;
+  unsigned char x;
+  unsigned char y;
+  unsigned char left;
+  unsigned char right;
+  unsigned char top;
+  unsigned char bottom;
+\end{verbatim}
+Before reading data for a particular channel you should always check 
+the corresponding value in the {\tt num\_blobs} array.  For example,
+given a {\tt VisionProxy} called {\tt vp}:
+\begin{verbatim}
+  if(vp.num_blobs[0] > 0)
+    printf("Largest blob on channel 0 has area %d\n", vp.blobs[0][0].area);
+\end{verbatim}
+
+\subsection{The {\tt LaserProxy} Class}
+This class is used to control the {\tt laser} device.   The most recently
+read scan data is held in two arrays:
+\begin{itemize}
+\item {\tt unsigned short ranges[PLAYER\_NUM\_LASER\_SAMPLES];} : The range
+information (in mm).  As with the {\tt SonarProxy} class, this information
+is also accessible with the {\tt []} operator.
+\item {\tt unsigned char intensities[PLAYER\_NUM\_LASER\_SAMPLES];} : The
+reflective intenstity information (if enabled).
+\end{itemize}
+Since the laser configured for different scan settings, some meta-data 
+is required to intepret these arrays:
+\begin{verbatim}
+  short min_angle;
+  short max_angle;
+  unsigned short resolution;
+  unsigned short range_count;
+\end{verbatim}
+The angles and angular resolution are specified in units of $0.1^{\circ}$.
+The {\tt range\_count} indicates how many ranges were actually received.
+
+You can configure the laser using the method:
+\begin{verbatim}
+  int Configure(short min_angle, short max_angle, 
+                unsigned short resolution, bool intensity);
+\end{verbatim}
+\noindent The last parameter enables or disables the return of intensity 
+values.
+
+\subsection{The {\tt LaserbeaconProxy} Class}
+This class is used to control the {\tt laserbeacon} device.  The number
+of perceived beacons is stored in the field {\tt count} and the information
+about the beacons is stored in an array:
+
+{\tt player\_laserbeacon\_item\_t beacons[PLAYER\_MAX\_LASERBEACONS];}
+
+\noindent Each {\tt player\_laserbeacon\_item\_t} structure contains
+the following data:
+\begin{verbatim}
+  uint8_t id;
+  uint16_t range;
+  int16_t bearing;
+  int16_t orient;
+\end{verbatim}
+
+The behavior of the {\tt laserbeacon} device can be changed with the 
+methods:
+\begin{verbatim}
+    int SetBits(unsigned char bit_count, unsigned short bit_size);
+    int SetThresh(unsigned short zero_thresh, unsigned short one_thresh);
+\end{verbatim}
+On error -1 is returned; otherwise 0.
+
+\subsection{The {\tt SpeechProxy} Class}
+This class is used to control the {\tt speech} device.  It contains one
+method: {\tt int Say(char* str)}
+
+\noindent The parameter {\tt str} is the ASCII string that will be 
+sent to Festival for synthesis.
+On error -1 is returned; otherwise 0.
+
+
+\subsection{The {\tt BroadcastProxy} Class}
+This class is used to control the {\tt broadcast} device.  It contains
+three methods:
+\begin{verbatim}
+  int Read(char *msg, int len);
+  int Write(char *msg, int len);
+  int Flush();
+\end{verbatim}
+Data may be read one message at a time from the incoming broadcast
+queue using the {\tt Read} method (which will return -1 when the queue 
+is empty).
+Data may be written one message at a time to the outgoing broadcast
+queue using the {\tt Write} method (which will return -1 if the
+queue overflows).  Messages are not actually sent to the server
+until the {\tt Flush} method is called.

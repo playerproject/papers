@@ -1,0 +1,65 @@
+
+
+
+-------------------------------------------------------------------------------
+- There are many levels at which robotics can be standardized.  Since
+  robotics is principally concerned with the control of sensors and
+  actuators (i.e., devices), a first step is to standardize the
+  fundamental device interaction model.
+
+- Throughout, we'll use the position interface as a motivating example.
+
+- At the level of device interaction, we propose the following:
+        - Use an interface/driver model, as do most OSs.
+        - Use file semantics (read,write,ioctl), as do most Unices.  We
+          might add more sophisticated access modes, such as exclusive
+          read.
+
+- We also must decide:
+    - The set of interfaces.
+    - The content of the read/write/ioctl messages for each interface.
+  We have ideas and examples relevant to these issues.
+
+- Choosing the set of interfaces is akin to standardizing concepts like
+  'keyboard,' 'mouse,' and 'hard drive.'
+
+- We assert that a client/server model offers many advantages (and
+  experience with UNIX suggests that it works well), but there are
+  other options.  In principle, given the assumption of file semantics, the
+  client/server model imposes no additional constraints.  In practice, the
+  fact that the data will flow over a socket does inform interface design.
+
+- We aim to control "conventional" robotic devices, which operate at 10s,
+  maybe 100s, of Hz. Our model will never be right for high-speed devices that
+  operate at 1000s of Hz.
+
+- When deciding what is included in the content of an interface, we
+  trade off between generality across many devices and exposing the
+  capabilities of any particular device.
+
+- When deciding what is in the command/data stream, as opposed to the ioctl
+  stream, we make a similar trade off.
+
+- In practice, ioctls are very useful, but even in principle, they are
+  necessary, if only to allow "atomic" request/reply interactions.
+
+- To officially support an interface, a driver may be required to support
+  certain ioctls.  A driver may also support other ioctls.  The set of
+  ioctls defined for an interface is the union of all the required and
+  optional ioctls.  If a driver does support a given ioctl, it must
+  preserve the semantics laid down in the standard.
+
+- Interfaces evolve over time, usually becoming more general as more
+  drivers are written, exposing limitations of the existing interface.
+  Stage is an extreme example of this phenomenon, because it has none
+  of the constraints of physical hardware.
+
+- We propose to write an RFC on this topic, and suggest that our model is a
+  starting point.  In order to make a useful standard, which would ensure
+  program portability, we would have to specify other things, including:
+     - communication model (e.g., client/server or in-memory)
+     - communication protocol (e.g., Player's custom message protocol or CORBA)
+     - communication format (e.g., Player's custom data format or XDR)
+-------------------------------------------------------------------------------
+
+

@@ -1,0 +1,32 @@
+
+\subsection*{Synopsis}
+ The {\tt lifo\_mcom} driver provides a last-in-first-out (LIFO)
+ multi-stack communication system with which clients can exchange data
+ through an instance of Player.
+
+ If Pop is called, the last piece of data that was Pushed to the named
+ channel is returned and then deleted.  If Read is called the last piece
+ of data added is returned, and left there.  Since this is a LIFO stack,
+ if we're reading drive commands, for example, we can be sure to get a
+ "STOP" and interrupt a "FWD" before it's been read.
+
+\subsection*{Interfaces}
+
+\noindent Supported interfaces:
+\begin{itemize}
+\item {\tt mcom}
+\end{itemize}
+
+\noindent Required devices:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\noindent Supported configuration requests:
+\begin{itemize}
+\item None.
+\end{itemize}
+
+\subsection*{Configuration file options}
+No configuration file options are supported.
+

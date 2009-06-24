@@ -1,0 +1,530 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%% author.tex %%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% sample root file for your contribution to a
+%
+% "contributed book" (global)
+%
+% Use this file as a template for your own input.
+%
+%%%%%%%%%%%%%%%%%%%%%%%% Springer-Verlag %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%% The following preamble of the contribution has been commented out
+%%% to allow LaTeX to \include that document into the main book
+
+% RECOMMENDED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\documentclass{svmult}
+
+%% choose options for [] as required from the list
+%% in the Reference Guide, Sect. 2.2
+
+%\usepackage{makeidx}         % allows index generation
+%\usepackage{graphicx}        % standard LaTeX graphics tool
+                              % when including figure files
+%\usepackage{multicol}        % used for the two-column index
+%\usepackage[bottom]{footmisc}% places footnotes at page bottom
+% etc.
+% see the list of further useful packages
+% in the Reference Guide, Sects. 2.3, 3.1-3.3
+
+%\makeindex             % used for the subject index
+                       % please use the style sprmidx.sty with
+                       % your makeindex program
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\begin{document}
+
+\title*{Research Directions in Robotic Software Frameworks}
+% Use \titlerunning{Short Title} for an abbreviated version of
+% your contribution title if the original one is too long
+\author{Davide Brugali\inst{1}\and Antonio Cisternino\inst{2}
+\and Diego Colombo\inst{2} \and Carle Côté\inst{3}\and Jannik
+Fritsch\inst{4}\and Brian Gerkey\inst{5} \and Gerhard
+Kraetzschmar\inst{6} \and François Michaud\inst{3} \and Richard
+Vaughan\inst{7}\and Hans Utz\inst{8}}
+\authorrunning{Brugali et al.}
+\institute{Universit\'a degli Studi di Bergamo, Italy \texttt{brugali@unibg.it} 
+\and AAA \texttt{aaa@bbb.bb} 
+\and AAA \texttt{aaa@bbb.bb}
+\and AAA \texttt{aaa@bbb.bb}
+\and SRI International, USA \texttt{gerkey@ai.sri.com} 
+\and AAA \texttt{aaa@bbb.bb}
+\and Simon Fraser University, Canada \texttt{vaughan@sfu.ca}
+\and AAA \texttt{aaa@bbb.bb}}
+
+
+%
+% Use the package "url.sty" to avoid
+% problems with special characters
+% used in your e-mail or web address
+%
+\maketitle
+
+\section{Introduction}
+\label{sec:ch31-Intro}
+
+In the software community, a framework indicates an integrated set
+of domain-specific software components
+\cite{31_CoplienSchmidt1995} which can be reused to create
+applications. A framework is more than a library of software
+components: It defines the common architecture underlying the
+particular applications built on the framework. Frameworks are a
+powerful development approach as they consist of both reusable
+code (the component library) and reusable design (the
+architecture).
+
+Frameworks have acquired popularity in object-oriented (OO). Here,
+the interpretation of "framework" ranges from structures of
+classes of cooperating objects, which through extension provide
+reusable basic designs for a family of similar applications
+\cite{31_JohnsonFoote1988}, to the more restrictive view
+\cite{31_Schmid1995} of complete, high level modules, which
+through customization directly result in specific applications for
+a certain domain. Customization is done through parameterization
+or by writing functional specifications.
+
+Frequently, the two views of framework, referred to as white box
+and black box approaches to reuse, may be simultaneously present
+in one framework. In fact, features which are likely to be common
+to most applications can be offered and therefore reused as black
+boxes. Black-box frameworks support extensibility by defining
+interfaces for components that can be plugged into the framework
+via composition. Existing functionalities are reused by defining
+components that conform to a particular interface and integrating
+these components into the framework. On the other hand, the class
+library accompanying the framework usually provides base classes
+(seen as white boxes) that can be specialized, by adding
+subclasses as needed, and easily integrated with the rest of the
+framework. White-box frameworks rely heavily on OO language
+features like inheritance and dynamic binding in order to achieve
+extensibility. Existing functionality is reused and extended by
+(1) inheriting from framework base classes and (2) overriding
+predefined hook methods using design patterns like the Template
+Method \cite{31_Gamma1995}.
+
+Framework based development has two main processes: development of
+the framework and development of an application adapting the
+framework. Every application framework evolves over time; this is
+called the framework life span \cite{31_Brugali1997}. Within this
+life span, the basic architectural elements which are independent
+from any specific application are implemented first. When new
+applications are built using the framework, new components are
+developed which eventually are generalized and integrated as new
+black box elements. This means that in its early stages a software
+framework is mainly conceived as a white box framework. However,
+through its adoption in an increasing number of applications, the
+framework matures: More concrete components, which provide black
+box solutions for common difficult problems, as well as high level
+objects, which represent the major abstractions found in the
+problem domain, become available within the framework.
+
+Since developing the framework requires a lot of effort, it is
+justified only if several applications will be built based on the
+framework. On the other hand, when the framework is available,
+developing an application from it offers considerable saving in
+time and effort compared to the development from scratch. The
+application is built by slightly modifying the framework, but by
+accepting the framework's high level design in general. In other
+words, most of the framework is reused, and reuse happens both at
+the high level design and at the code level. Building a framework
+is more demanding than building an application. The designer has
+to have a deep understanding of the domain the application is
+embedded into, and has to anticipate the needs of future
+application developers. As a matter of fact, successful frameworks
+are often derived from reengineering legacy applications by
+abstracting from them the knowledge of principal software
+designers.
+
+Most framework-based software development is organized along the
+value-added principle \cite{31_Mili2002}. This divides any
+software system into a set of horizontal layers, each one built on
+top of another. This approach promotes separation of concerns and
+enforces modularity. Typically, a software framework is subdivided
+into a system infrastructure layer, a functional (also called
+horizontal or business domain) layer, and an application (also
+called vertical) layer.
+
+The \emph{system infrastructure layer} (usually called
+\emph{middleware}) consists of a collection of software components
+that offer basic services like communication between distributed
+applications, uniform access to heterogeneous resources,
+independence from processing platforms and distributed location,
+distributed component naming, service brokering and treading, and
+remote execution. Examples of distributed middleware systems are
+Microsoft .NET, the implementations of OMG CORBA, and the Sun
+Enterprise Java Beans.
+
+The customization of the system infrastructure layer is usually
+black-box. It consists in the aggregation of the frameworks'
+elemental components (such as mechanisms for logical
+communication, concurrency, and device abstraction) in which the
+whole application has to be written.
+
+The \emph{functional} (also called \emph{business domain})
+\emph{layer} is the model of a robotic application and consists of
+software components, which directly map to real entities like a
+vision system or to common robot functionalities such as sensor
+processing, mapping, localization, path planning, and task
+planning, or even to typical robot capabilities such as reactive
+behaviors.
+
+Typically, they are implemented on top of the system
+infrastructure layer. For example, reactive behaviors delegate
+device abstractions for motion actuation, sensor processing, path
+planning, and task planning rely on the framework concurrency
+model in order to execute on different time scale, multi-robot
+mapping and localization build on data exchanged through a common
+distributed environment.
+
+The customization of the functional layer is usually white-box.
+The basic components are intermediary classes, which by their very
+nature are fairly application independent, although they have been
+conceived bearing in mind a specific application domain (e.g.
+robot mobility or visual servoing). They are written using the
+elemental components of the framework, and they have to be
+specialized for each concrete application.
+
+The \emph{application layer} connects the functional components
+according to the information and control flows of any robot task.
+Examples of robot tasks are soccer playing, vacuum cleaning,
+museum tour guiding, mars surface exploration.
+
+The customization of the application layer is usually grey-box. It
+consists of the interconnection of pluggable application-specific
+components through the middleware system. These components are the
+result of the adoption of the framework for the development of
+more and more applications and in some cases they are open source
+components-off-the-shelf (COTS). COTS products are designed to
+support a standard virtual interface, which consists of a set of
+rules for accessing the component's functionality in a homogeneous
+way, regardless of the execution platform, the programming
+language, and other specifics.
+
+Software frameworks offer a unified view to model and develop
+robotic software systems at every level of the vertical
+decomposition from the system infrastructure to the final
+application through the functional model.
+
+The papers in the third Part of this book describe different
+approaches that address to some extent most or all of the aspects
+of robot framework development (such as black box or white box
+reuse. Individually, they propose innovative contributions on how
+to apply framework development concepts in the robotics domain.
+These approaches are illustrated in the next section. Thereafter,
+the final section draws some conclusions.
+
+
+\section{Opportunities to exploit Framework-based development in Robotics}
+\label{sec:ch31-Opportunities}
+
+Robot software developers have often experienced a sense of
+frustration when developing an application that is (nearly) the
+same as several other releases for different projects, but they
+have not been able to capture and exploit the commonalties. These
+problems frequently and typically occur in four circumstances.
+
+\begin{enumerate}
+\item When the application migrates to a different robot platform.
+Despite the differences in the mechanical structure, many
+commonalties can be identified in the control architecture, such
+as how to acquire sensory data or transmit commands to the
+actuators.
+
+\item When the application scales up from a single robot to a
+multi-robot system or when it is restructured from centralized to
+decentralized and distributed control paradigm. Despite the
+differences in the communication mechanisms (shared memory or
+networked environment) the interactions among the control modules
+of the robot control architecture remain unchanged or show many
+commonalties.
+
+\item When the same robotic system is used in different environments or
+for different tasks. Despite the differences in the control logic,
+most of the robot capabilities and functionalities are common in
+every application.
+
+\item When the robotic system is build from the composition of
+heterogeneous or legacy subsystems. Despite the differences in the
+programming languages, concurrency models, or data interchange
+formats, commonalties can be found in the semantics of the
+components' behavior.
+\end{enumerate}
+
+Software frameworks are a possible solution to the above problems,
+as illustrated in the following five sections.
+
+
+\subsection{Frameworks for device access and control}
+One vital task for every robot system is to interface with
+hardware sensors and actuators. Familiar mass-market I/O devices
+such as mice and joysticks were once specialist experimental
+devices, comparable to the robot devices we build and buy today.
+Each device had a unique interface, and software had to be
+specially written to take advantage of it. Over time, as these
+devices became common, their external interfaces have converged to
+well-known logical standards. For user-level applications, the
+data generated by a mouse is received as events from an abstract,
+generic, "pointer" device. The hardware details are hidden behind
+an interface that encapsulates the logical functionality of the
+device. Other hardware, such as keyboards, disks and printers are
+treated similarly. A significant fraction of the source code of a
+operating system such as Windows or Linux is composed of such
+"device driver" code.
+
+Robotics devices are far more rare than mice and printers, but
+recently we have seen a limited amount of commoditization in
+research robots. The Pioneer 2 and 3 robots from Mobile Robots
+Inc, and the SICK LMS laser scanner are good examples of devices
+that are sold and used in the hundreds, all over the world. The
+Pioneers ship with the software framework "ARIA" that contains
+drivers for the Pioneer's hardware and the LMS. ARIA provides a
+high-level, structured  (Object Oriented) environment for writing
+robot controllers, and provides some powerful modules for doing
+common tasks such as mapping and localization. It is a good
+example of a system infrastructure framework: it provides a
+complete system for robot programming and saves the controller
+author from having to write device drivers herself.  The
+"Mobility" APIs provide similar functionality for for RWI Robots,
+and also support the SICK LMS. ARIA and Mobility are proprietary
+systems that work only with their companies' robots. Indeed, they
+provide a key part of the value of the robot to their customers:
+they make programming robots much easier. But they target
+different robots and their APIs are very different. If you move
+your LMS from a Pioneer to an ATRV Jr. robot, you have to use
+completely different code to access your range data.
+
+Another approach is taken by the "Player" robot interface,
+described in the Chapter by Richar Vaughan and Brian Gerkey. The
+design philosophy of Player is to extend the computer's operating
+system up to meet the robot controller. Like an operating system,
+Player is designed to provide convenient access to hardware and
+software resources, but otherwise keep out of the way. Robot
+controllers using Player can be written in any programming
+language, and devices can be accessed via a network socket or via
+a linked C library. Thus Player places very few restrictions on
+the user's robot control code.
+
+The key feature of Player is that logically similar devices
+present a similar interface. For example, most mobile robot bases
+can accept velocity control commands  that are essentially [v,w]
+tuples, and provide odometric position estimates that are
+essentially [x,y,theta] pose tuples. Player supports both Pioneer
+and RWI robots with exactly the same interface, along with several
+other robots such as the old NOMAD range and the new Segway RMP.
+Controllers that target Player's "position2d" abstract device
+interface can control any of these robots without even being
+recompiled. Similarly, Player's drivers for the SICK LMS and the
+smaller, cheaper Hokuyo URG both implement the abstract "laser"
+interface.
+
+Robot controllers are written to target these abstract interfaces,
+which means we can substitute any device with another that
+provides the same logical functionality. So we can run the same
+controller on different robot hardware or, more commonly, replace
+the real robot with a simulator. Today, code is routinely
+developed and tested using Player's simulation backends "Stage"
+and "Gazebo" before being deployed on real robots. Often some
+tweaks are needed when moving from simulation to reality, but the
+convenience of prototyping in simulation overwhelms this extra
+cost.
+
+Player is a popular system, but its lack of constraints means that
+it imposes no structure or high-level abstractions that can
+usefully guide and facilitate controller design, such as those
+provided by Mobility. Several projects have built on top of
+Player, wrapping the device drivers and network transparency with
+a more structured development environment, providing powerful
+object hierarchies or visual programming interfaces. One example
+is the MARIE system, described in the Chapter by Carle Cote et al.
+This is an excellent of example of code re-use working in
+practice, and is a very promising method for increasing the
+efficiency of development in the community. Player and MARIE are
+Free Software, so such code sharing is not hindered by proprietary
+software issues. This is a key advantage in a small community with
+no large software market.
+
+\subsection{High-level communication Frameworks}
+
+A very challenging robotic field that demands effective
+integration techniques is that of personal robot companions.
+Looking at the more abstract cognitive abilities of robot
+companions, the integration of multiple modalities for achieving
+human-like interaction capabilities requires flexible
+communication frameworks that can be easily used by
+interdisciplinary researchers. The interdisciplinary researchers
+involved in integrated projects are neither integration nor
+middleware experts, so ease of use is crucial for the successful
+application of such a framework. Another aspect of research
+prototypes is that specification changes occur frequently during
+the development of these systems. Thus, the impact of interface
+changes on the system architecture should be minimal to avoid
+versioning problems. This, in turn, allows rapid prototyping and
+iterative development that must be supported by a framework not
+only for single modules but also for the integrated system.
+
+A framework that addresses these requirements is the XCF-SDK
+described in the Chapter "An Integration Framework for Developing
+Interactive Robots" by J. Fritsch and S. Wrede. Instead of
+targeting the whole range of issues involved in integrating
+standard robotic software components, XCF provides a solution for
+flexible data-driven component integration as well as event-driven
+coordination by focusing on concepts from different middleware
+architectures that are relevant for the domain of intelligent
+systems research. This yields a lightweight API and provides
+features from both black-box and white-box frameworks. Within XCF,
+components are mainly described by the XML data they deliver to
+other system modules either directly or mediated through instances
+of an active XML database. Realizing an interceptor pattern and
+utilizing XML features, rich support for system introspection is
+provided in order to facilitate the debugging process.
+
+Robotics4.NET is a message-oriented communication framework that
+supports the implementation of control software for robots
+designed to operate in human-based environments. It will be
+presented in the Chapter by Antonio Cisternino et al. Its
+peculiarity relies in its structure centered around the notion of
+body of a robot. The proposed model has been inspired to the
+biological structure of human body; this choice has been driven by
+recent studies on the role of the body in the cognitive process of
+human beings in the research area of Embodied AI. In this respect
+the framework provides an XML-based, message-oriented
+communication infrastructure that acts like the spine, connecting
+organs to the brain. Body organs, called roblets provide an
+abstract view of the underlying hardware subsystem they are
+responsible for.
+
+\subsection{Frameworks for functionality packaging}
+Supporting specific target applications, such as common tasks in
+robotics scenarios, is mandatory to allow robotic experts to focus
+on the problem domain, instead of dealing with the entire problem
+set of the application domain. It is also a key feature to
+fostering reuse and generalization in application code. The
+difficulty is, not to constrain the programmer in the choice of
+its actual solution, or to impose restrictions on the kind of
+solution for other problem areas of the application.
+
+An application framework supports the development of applications
+for common robotic tasks (such as video image processing or
+behavior based reactive control), which manage the control flow
+and organize the data flow for the task at hand, shielding the
+application programmer from much of the intrinsic difficulties of
+software development within a concurrent, distributed software
+environment. Providing a framework for the tasks control and data
+flow also facilitates to add centralized support for addressing
+timeliness and scalability problems within the application.
+Instead of imposing a fixed implementation, it provides callback
+(in form of virtual methods) for integrating the application
+programmers extensions for the solution of the problem in the
+target scenario.
+
+Unfortunately, the development of frameworks requires considerable
+effort. But black-box style application framework components
+require the interaction with the interfaces of a concrete robot
+platform, which tends to limit their reusability. So the
+integration of application frameworks with multi-platform robotics
+middleware is desirable, to compensate the development effort by a
+broad applicability of the application framework. It also allows
+to reuse and utilize the provided infrastructure for the
+implementation of the framework components.
+
+The chapter by Utz et al. presents a video image processing
+framework (VIP) that targets the problem of applying computer
+vision in the field of real-time constraint autonomous mobile
+robotics. It aims to provide an environment that allows the
+developer to concentrate on the robot vision task without risking
+to jeopardize the reactivity and performance of the system as a
+whole.
+
+The VIP framework features the above discussed different aspects
+of robotics framework design. The white-box framework manages the
+control flow and organizes the data flow, shielding the developer
+from the subtle locking issues and memory management problems. In
+order to meet the requirements of high-performance
+real-time-constraint  robotics applications, it provides a
+powerful sensor-triggered, on-demand processing model for image
+operations. The framework also offers a set of tools that assist
+in the debugging, assessment and tuning of the vision application.
+Furthermore, the middleware integration provides a sophisticated
+communication infrastructure for distributed robotics applications
+as well as powerful facilities for the configuration and
+parameterization that are exploited by the framework components to
+enhance and their flexibility and reusability. A fast growing
+library of black-box components for the framework confirms the
+applicability of this application framework in very different
+robotics scenarios.
+
+
+\subsection{Frameworks for component integration}
+Many existing software components can be found in robotics and it
+would be beneficial to reuse them in an integrated fashion using
+their initial implementation, saving time and avoiding introducing
+errors when reimplementing everything from scratch. Unfortunately,
+integration of existing software components is difficult knowing
+that they are typically developed independently, following their
+own set of requirements (e.g. timing, communication protocol,
+programming language, operating system, objectives, applications).
+Moreover, those components are often available "as is", with not
+much support from their developers and with minimal documentation.
+Reusability in this context is challenging but crucial for the
+evolution of the field, avoiding becoming experts in all the
+related areas that must be integrated.
+
+System integration frameworks main objective is to support one or
+many integration approaches (e.g. communication protocols, central
+repository, remote procedure call, dynamic and static linkage) to
+interconnect heterogeneous applications in a larger system with
+its own set of concepts and requirements. Two key issues are
+generally considered: system communications and heterogeneous
+applications adaptation. To cope with those issues, system
+integration frameworks facilitates the interconnection of
+heterogeneous software components by providing flexible
+implementations of communication protocols and mechanisms, and by
+offering black-box and white-box frameworks to create
+interoperable components that export the functionalities of
+existing heterogeneous applications.
+
+The Chapter by Côté et al. presents MARIE, a system integration
+framework that addresses three important issues in robotic
+software development:
+
+\begin{enumerate}
+\item Being able to interconnect heterogeneous software components, from
+legacy to novel "state of the art" software components.
+
+\item Being able to support a wide range of communication protocols and
+mechanisms to cope with the fact that there is no unified protocol
+available, and no consensus has yet emerged from the robotic
+software community.
+
+\item Being able to support multiple sets of concepts and abstractions
+within the integration frameworks, to help multidisciplinary team
+members to collaborate without each member having to become an
+expert in every aspect of robotics software development.
+\end{enumerate}
+
+MARIE's software architecture proposes a layered architecture,
+composed of different white-box and black-box frameworks,
+providing integration tools to help wrapping existing application
+functionalities in reusable software blocks. Each layer abstracts
+and manages different aspects needed to integrate heterogeneous
+software components together, such as communications, data
+handling, shared data types, distributed computing, low-level
+operating system functions, component architecture, reusable
+software blocks and system deployment, etc. With this approach,
+MARIE offers a flexible and extendable software architecture
+suitable in various integration situations, and allows software
+developers to work at the required abstraction level to craft
+reusable software blocks or to build robotic systems.
+
+
+\section{Conclusions}
+\label{sec:ch31-conclusions}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\printindex
+%\end{document}
